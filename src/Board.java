@@ -7,16 +7,20 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.image.ImageView;
+
+import pieces.Piece;
 
 public class Board extends Pane
 {
 	private int columns = 8;
 	private int rows = 8;
-	private double tileSize = 60;
+	private double tileSize = 120;
 
 	public Board()
 	{
 		drawBoard();	
+		addPiece(0, 1, true, "pawn");
 	}
 
 	private void drawBoard()
@@ -36,6 +40,16 @@ public class Board extends Pane
 			}
 		}
 		setPrefSize(columns * tileSize, rows * tileSize);
+	}
+
+	public void addPiece(int col, int row, boolean isWhite, String name)
+	{
+		Piece piece = new Piece(col, row, isWhite, name, 1);
+		ImageView pieceView = piece.getImageView();
+
+		pieceView.setX(col * tileSize);
+		pieceView.setY(row * tileSize);
+		getChildren().add(pieceView);
 	}
 }
 
