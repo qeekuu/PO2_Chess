@@ -36,6 +36,7 @@ public class Main extends Application
 		primaryStage.setScene(scene);
 		primaryStage.centerOnScreen();
 		primaryStage.show();
+		primaryStage.setResizable(false);
 		// primaryStage.setResizable(false);	
 
 		// Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();

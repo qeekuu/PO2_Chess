@@ -4,12 +4,24 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.geometry.Rectangle2D;
 
+enum Type
+{
+	PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING
+}
+
+enum Color
+{
+	WHITE, BLACK
+}
+
 public class Piece {
     public int column, row, preCol, preRow;
     public boolean isWhite;
     public String name;
     public int value;
 	public int x, y;
+	public Type pieceType;
+	public Color pieceColor;
 
     private Image spriteSheet;
     private ImageView imageView;
@@ -35,6 +47,45 @@ public class Piece {
 	public int getY(int row)
 	{
 		return row * 80;
+	}
+	
+	public Type getType()
+	{
+		return pieceType;
+	}
+	
+	public void setType(Type pieceType)
+	{
+		this.pieceType = pieceType;
+	}
+	
+	public Color getColor()
+	{
+		return pieceColor;
+	}
+
+	public void setColor(Color pieceColor)
+	{
+		this.pieceColor = pieceColor;
+	}
+
+	public Piece getPiece(Type type, Color color)
+	{
+		switch(type)
+		{
+			case PAWN:
+				return new Pawn(color);
+			case KNIGHT:
+				return new KNIGHT(color);
+			case BISHOP:
+				return new BISHOP(color);
+			case ROOK:
+				return new ROOK(color);
+			case QUEEN:
+				return new QUEEN(color);
+			default:
+				return new KING(color);
+		}
 	}
 
     private void loadSprite() {
