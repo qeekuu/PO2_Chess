@@ -2,7 +2,7 @@ package pieces;
 
 public class Pawn extends Piece
 {
-	Pawn(Color pieceColor)
+	Pawn(PieceColor pieceColor)
 	{
 		setType(Type.PAWN);
 		setColor(pieceColor);

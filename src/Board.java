@@ -10,6 +10,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.image.ImageView;
 
 import pieces.Piece;
+import pieces.PieceColor;
+import pieces.Type;
 
 public class Board extends Pane
 {
@@ -45,42 +47,49 @@ public class Board extends Pane
 private void setupPieces()
     {
         // Czarne figury
-        addPiece(0, 0, false, "rook");
-		addPiece(1, 0, false, "knight");
-		addPiece(2, 0, false, "bishop");
-		addPiece(3, 0, false, "queen");
-		addPiece(4, 0, false, "king");
-		addPiece(5, 0, false, "bishop");
-		addPiece(6, 0, false, "knight");
-		addPiece(7, 0, false, "rook");
+        addPiece(0, 0, PieceColor.BLACK, Type.ROOK);
+		addPiece(1, 0, PieceColor.BLACK, Type.KNIGHT);
+        addPiece(2, 0, PieceColor.BLACK, Type.BISHOP);
+        addPiece(3, 0, PieceColor.BLACK, Type.QUEEN);
+        addPiece(4, 0, PieceColor.BLACK, Type.KING);
+        addPiece(5, 0, PieceColor.BLACK, Type.BISHOP);
+        addPiece(6, 0, PieceColor.BLACK, Type.KNIGHT);
+        addPiece(7, 0, PieceColor.BLACK, Type.ROOK);
 
-        for (int col = 0; col < columns; col++) {
-            addPiece(col, 1, false, "pawn");
-        }
+        for (int col = 0; col < columns; col++) 
+		{
+            addPiece(col, 1, PieceColor.BLACK, Type.PAWN);
+        }	
 
         // Białe figury
-        addPiece(0, 7, true, "rook");
-		addPiece(1, 7, true, "knight");
-		addPiece(2, 7, true, "bishop");
-		addPiece(3, 7, true, "queen");
-		addPiece(4, 7, true, "king");
-		addPiece(5, 7, true, "bishop");
-		addPiece(6, 7, true, "knight");
-		addPiece(7, 7, true, "rook");
+        addPiece(0, 7, PieceColor.WHITE, Type.ROOK);
+        addPiece(1, 7, PieceColor.WHITE, Type.KNIGHT);
+        addPiece(2, 7, PieceColor.WHITE, Type.BISHOP);
+        addPiece(3, 7, PieceColor.WHITE, Type.QUEEN);
+        addPiece(4, 7, PieceColor.WHITE, Type.KING);
+        addPiece(5, 7, PieceColor.WHITE, Type.BISHOP);
+        addPiece(6, 7, PieceColor.WHITE, Type.KNIGHT);
+        addPiece(7, 7, PieceColor.WHITE, Type.ROOK);
 
-        for (int col = 0; col < columns; col++) {
-            addPiece(col, 6, true, "pawn");
-        }
-    }
+        for (int col = 0; col < columns; col++) 
+		{
+            addPiece(col, 6, PieceColor.WHITE, Type.PAWN);
+        }  
+	}
 
-	public void addPiece(int col, int row, boolean isWhite, String name)
+	public void addPiece(int col, int row, PieceColor color, Type type)
 	{
-		Piece piece = new Piece(col, row, isWhite, name, 1);
-		ImageView pieceView = piece.getImageView();
+		Piece piece = new Piece(col, row, color == PieceColor.WHITE, type.name().toLowerCase(), 1);
+		piece.setType(type);
+		piece.setColor(color);
 
+
+		ImageView pieceView = piece.getImageView();
+		
 		pieceView.setX(col * tileSize);
 		pieceView.setY(row * tileSize);
 		getChildren().add(pieceView);
 	}
+
 }
 

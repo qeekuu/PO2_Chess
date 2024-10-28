@@ -4,40 +4,34 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.geometry.Rectangle2D;
 
-enum Type
-{
-	PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING
-}
 
-enum Color
+public class Piece 
 {
-	WHITE, BLACK
-}
-
-public class Piece {
     public int column, row, preCol, preRow;
     public boolean isWhite;
     public String name;
     public int value;
 	public int x, y;
 	public Type pieceType;
-	public Color pieceColor;
+	public PieceColor pieceColor;
 
     private Image spriteSheet;
     private ImageView imageView;
 
-    public Piece(int column, int row, boolean isWhite, String name, int value) {
+    public Piece(int column, int row, boolean isWhite, String name, int value) 
+	{
         this.column = column;
         this.row = row;
         this.isWhite = isWhite;
         this.name = name;
         this.value = value;
+		this.pieceColor = isWhite ? PieceColor.WHITE : PieceColor.BLACK;
 		x = getX(column);
 		y = getY(row);
 		preCol = column;
 		preRow = row;
         loadSprite();
-    }
+	}
 	
 	public int getX(int col)
 	{
@@ -57,64 +51,78 @@ public class Piece {
 	public void setType(Type pieceType)
 	{
 		this.pieceType = pieceType;
+		updateSprite();
 	}
 	
-	public Color getColor()
+	public PieceColor getColor()
 	{
 		return pieceColor;
 	}
 
-	public void setColor(Color pieceColor)
+	public void setColor(PieceColor pieceColor)
 	{
 		this.pieceColor = pieceColor;
+		updateSprite();
 	}
 
-	public Piece getPiece(Type type, Color color)
+	public Piece getPiece(Type type, PieceColor color)
 	{
 		switch(type)
 		{
 			case PAWN:
 				return new Pawn(color);
 			case KNIGHT:
-				return new KNIGHT(color);
+				return new Knight(color);
 			case BISHOP:
-				return new BISHOP(color);
+				return new Bishop(color);
 			case ROOK:
-				return new ROOK(color);
+				return new Rook(color);
 			case QUEEN:
-				return new QUEEN(color);
+				return new Queen(color);
 			default:
-				return new KING(color);
+				return new King(color);
 		}
 	}
 
     private void loadSprite() {
         String filePath = "/resources/pieces160x480.png";
         this.spriteSheet = new Image(getClass().getResourceAsStream(filePath));
-
-        int spriteWidth = 80;
-        int spriteHeight = 80;
-
         imageView = new ImageView(spriteSheet);
-		
-		int spriteX = 0;
-		if(name.equals("pawn"))
-			spriteX = 5 * spriteWidth;
-		else if(name.equals("rook"))
-			spriteX = 4 * spriteWidth;
-		else if(name.equals("knight"))
-			spriteX = 3 * spriteWidth;
-		else if(name.equals("bishop"))
-			spriteX = 2 * spriteWidth;
-		else if(name.equals("queen"))
-			spriteX = 1 * spriteWidth;
-		else if(name.equals("king"))
-			spriteX = 0 * spriteWidth;
-		
-		int spriteY = isWhite ? 0 : spriteHeight; // y koordynat 0 jesli biala, 80 jesli czarna
-		
-		imageView.setViewport(new Rectangle2D(spriteX, spriteY, spriteWidth, spriteHeight));
+		updateSprite();		
     }
+
+	public void updateSprite()
+	{
+		int spriteWidth = 80;
+		int spriteHeight = 80;
+
+		int spriteX;
+		switch(getType())
+		{
+			case PAWN:
+				spriteX = 5 * spriteWidth;
+				break;
+			case ROOK:
+				spriteX = 4 * spriteWidth;
+				break;
+			case KNIGHT:
+				spriteX = 3 * spriteWidth;
+				break;
+			case BISHOP:
+				spriteX = 2 * spriteWidth;
+				break;
+			case QUEEN:
+				spriteX = 1 * spriteWidth;
+				break;
+			case KING:
+			default:
+				spriteX = 0;
+					break;
+		}
+
+		int spriteY = (getColor() == PieceColor.WHITE) ? 0 : spriteHeight;
+		imageView.setViewport(new Rectangle2D(spriteX, spriteY, spriteWidth, spriteHeight));
+	}
 
     public ImageView getImageView() {
         return imageView;

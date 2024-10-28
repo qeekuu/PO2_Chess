@@ -1,8 +1,8 @@
-package pieces
+package pieces;
 
 public class Queen extends Piece
 {
-	Queen(Color pieceColor)
+	Queen(PieceColor pieceColor)
 	{
 		setType(Type.QUEEN);
 		setColor(pieceColor);
