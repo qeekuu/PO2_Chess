@@ -4,8 +4,24 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.geometry.Rectangle2D;
 
+/**
+ *	Absract class for pieces
+ *
+ *
+ * */
 
-public class Piece 
+enum Type
+{
+	PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING	
+}
+
+enum PieceColor
+{
+	WHITE, BLACK
+}
+
+
+public abstract class Piece 
 {
     public int column, row, preCol, preRow;
     public boolean isWhite;
@@ -18,14 +34,8 @@ public class Piece
     private Image spriteSheet;
     private ImageView imageView;
 
-    public Piece(int column, int row, boolean isWhite, String name, int value) 
+    public Piece() 
 	{
-        this.column = column;
-        this.row = row;
-        this.isWhite = isWhite;
-        this.name = name;
-        this.value = value;
-		this.pieceColor = isWhite ? PieceColor.WHITE : PieceColor.BLACK;
 		x = getX(column);
 		y = getY(row);
 		preCol = column;
