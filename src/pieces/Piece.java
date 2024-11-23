@@ -4,6 +4,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.geometry.Rectangle2D;
 
+import main.Main;
+
 /**
  *	Absract class for pieces
  *
@@ -23,23 +25,29 @@ enum PieceColor
 
 public abstract class Piece 
 {
-    public int column, row, preCol, preRow;
+    public int col, row, preCol, preRow;
     public boolean isWhite;
     public String name;
     public int value;
-	public int x, y;
 	public Type pieceType;
 	public PieceColor pieceColor;
 
     private Image spriteSheet;
     private ImageView imageView;
+	private String color;
+	private int x;
+	private int y;
 
-    public Piece() 
+    public Piece(String color, int col, int row) 
 	{
-		x = getX(column);
+		this.color = color;
+		this.col = col;
+		this.row = row;
+		x = getX(col);
 		y = getY(row);
-		preCol = column;
+		preCol = col;
 		preRow = row;
+
         loadSprite();
 	}
 	

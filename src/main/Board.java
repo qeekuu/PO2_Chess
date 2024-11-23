@@ -1,3 +1,5 @@
+package main;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.event.ActionEvent;
@@ -9,8 +11,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.ImageView;
 
-import pieces.Piece;
-import pieces.PieceColor;
 
 public class Board extends Pane
 {
