@@ -2,9 +2,8 @@ package pieces;
 
 public class Knight extends Piece
 {
-	Knight(PieceColor pieceColor)
+	public Knight(PieceColor pieceColor, int col, int row)
 	{
-		setType(Type.KNIGHT);
-		setColor(pieceColor);
+		super(pieceColor, col, row, Type.KNIGHT);
 	}
 }

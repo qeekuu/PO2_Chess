@@ -2,9 +2,8 @@ package pieces;
 
 public class King extends Piece
 {
-	King(PieceColor pieceColor)
+	public King(PieceColor pieceColor, int col, int row)
 	{
-		setType(Type.KING);
-		setColor(pieceColor);
+		super(pieceColor, col, row, Type.KING);
 	}
 }

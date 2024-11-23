@@ -12,16 +12,6 @@ import main.Main;
  *
  * */
 
-enum Type
-{
-	PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING	
-}
-
-enum PieceColor
-{
-	WHITE, BLACK
-}
-
 
 public abstract class Piece 
 {
@@ -38,17 +28,20 @@ public abstract class Piece
 	private int x;
 	private int y;
 
-    public Piece(String color, int col, int row) 
+    public Piece(PieceColor pieceColor, int col, int row, Type pieceType) 
 	{
-		this.color = color;
+		// this.color = color;
 		this.col = col;
 		this.row = row;
+		this.pieceType = pieceType;
+		this.pieceColor = pieceColor;
 		x = getX(col);
 		y = getY(row);
 		preCol = col;
 		preRow = row;
 
         loadSprite();
+		updateSprite();
 	}
 	
 	public int getX(int col)
@@ -83,30 +76,10 @@ public abstract class Piece
 		updateSprite();
 	}
 
-	public Piece getPiece(Type type, PieceColor color)
-	{
-		switch(type)
-		{
-			case PAWN:
-				return new Pawn(color);
-			case KNIGHT:
-				return new Knight(color);
-			case BISHOP:
-				return new Bishop(color);
-			case ROOK:
-				return new Rook(color);
-			case QUEEN:
-				return new Queen(color);
-			default:
-				return new King(color);
-		}
-	}
-
     private void loadSprite() {
         String filePath = "/resources/pieces160x480.png";
         this.spriteSheet = new Image(getClass().getResourceAsStream(filePath));
         imageView = new ImageView(spriteSheet);
-		updateSprite();		
     }
 
 	public void updateSprite()
@@ -138,7 +111,8 @@ public abstract class Piece
 					break;
 		}
 
-		int spriteY = (getColor() == PieceColor.WHITE) ? 0 : spriteHeight;
+		// int spriteY = (getColor() == PieceColor.WHITE) ? 0 : spriteHeight;
+		int spriteY = (pieceColor == PieceColor.WHITE) ? 0 : spriteHeight;
 		imageView.setViewport(new Rectangle2D(spriteX, spriteY, spriteWidth, spriteHeight));
 	}
 

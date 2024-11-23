@@ -2,9 +2,8 @@ package pieces;
 
 public class Rook extends Piece
 {
-	Rook(PieceColor pieceColor)
+	public Rook(PieceColor pieceColor, int col, int row)
 	{
-		setType(Type.ROOK);
-		setColor(pieceColor);
+		super(pieceColor, col, row, Type.ROOK);
 	}
 }

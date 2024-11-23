@@ -2,9 +2,8 @@ package pieces;
 
 public class Bishop extends Piece
 {
-	Bishop(PieceColor pieceColor)
+	public Bishop(PieceColor pieceColor, int col, int row)
 	{
-		setType(Type.BISHOP);
-		setColor(pieceColor);
+		super(pieceColor, col, row, Type.BISHOP);
 	}
 }

@@ -14,6 +14,9 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 
+import pieces.Type;
+import pieces.PieceColor;
+
 public class Main extends Application
 {
 	@Override
@@ -28,13 +31,19 @@ public class Main extends Application
 
 		//SZACHOWNICA BOARD.java
 		Board chessboard = new Board();
+		chessboard.addPiece(0, 1, Type.PAWN, PieceColor.WHITE); // Biały pionek
+        chessboard.addPiece(0, 6, Type.PAWN, PieceColor.BLACK); // Czarny pionek
+        chessboard.addPiece(4, 0, Type.QUEEN, PieceColor.WHITE); // Biała królowa
+        chessboard.addPiece(4, 7, Type.KING, PieceColor.BLACK); // Czarny król
+
+
 		chessboard.setPrefSize(640, 640);
 		layout.getChildren().add(chessboard);
 
 		Scene scene = new Scene(layout, 900, 640, Color.BLACK);
 
-		Image icon = new Image("/resources/chess.png");
-		primaryStage.getIcons().add(icon);
+		//Image icon = new Image("/resources/chess.png");
+		//primaryStage.getIcons().add(icon);
 		primaryStage.setScene(scene);
 		primaryStage.centerOnScreen();
 		primaryStage.show();

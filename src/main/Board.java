@@ -11,6 +11,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.ImageView;
 
+import pieces.Type;
+import pieces.PieceColor;
+import pieces.Piece;
+import pieces.Pawn;
+import pieces.Knight;
+import pieces.Bishop;
+import pieces.Rook;
+import pieces.Queen;
+import pieces.King;
 
 public class Board extends Pane
 {
@@ -45,48 +54,44 @@ public class Board extends Pane
 	
 private void setupPieces()
     {
-        // Czarne figury
-        // addPiece(0, 0, PieceColor.BLACK, Type.ROOK);
-		// addPiece(1, 0, PieceColor.BLACK, Type.KNIGHT);
-        // addPiece(2, 0, PieceColor.BLACK, Type.BISHOP);
-        // addPiece(3, 0, PieceColor.BLACK, Type.QUEEN);
-        // addPiece(4, 0, PieceColor.BLACK, Type.KING);
-        // addPiece(5, 0, PieceColor.BLACK, Type.BISHOP);
-        // addPiece(6, 0, PieceColor.BLACK, Type.KNIGHT);
-        // addPiece(7, 0, PieceColor.BLACK, Type.ROOK);
-
-        // for (int col = 0; col < columns; col++) 
-		// {
-        //     addPiece(col, 1, PieceColor.BLACK, Type.PAWN);
-        // }	
-
-        // Białe figury
-        // addPiece(0, 7, PieceColor.WHITE, Type.ROOK);
-        // addPiece(1, 7, PieceColor.WHITE, Type.KNIGHT);
-        // addPiece(2, 7, PieceColor.WHITE, Type.BISHOP);
-        // addPiece(3, 7, PieceColor.WHITE, Type.QUEEN);
-        // addPiece(4, 7, PieceColor.WHITE, Type.KING);
-        // addPiece(5, 7, PieceColor.WHITE, Type.BISHOP);
-        // addPiece(6, 7, PieceColor.WHITE, Type.KNIGHT);
-        // addPiece(7, 7, PieceColor.WHITE, Type.ROOK);
-
-        // for (int col = 0; col < columns; col++) 
-		// {
-        //     addPiece(col, 6, PieceColor.WHITE, Type.PAWN);
-        // }  
+    
 	}
 
-	public void addPiece(int col, int row, Type type, PieceColor pieceColor)
-	{
-		Piece piece = new Piece();
+public void addPiece(int col, int row, Type type, PieceColor pieceColor) {
+    Piece piece;
 
+    // Tworzymy odpowiedni typ figury w zależności od podanego typu
+    switch (type) {
+        case PAWN:
+            piece = new Pawn(pieceColor, col, row);
+            break;
+        case KNIGHT:
+            piece = new Knight(pieceColor, col, row);
+            break;
+        case BISHOP:
+            piece = new Bishop(pieceColor, col, row);
+            break;
+        case ROOK:
+            piece = new Rook(pieceColor, col, row);
+            break;
+        case QUEEN:
+            piece = new Queen(pieceColor, col, row);
+            break;
+        case KING:
+        default:
+            piece = new King(pieceColor, col, row);
+            break;
+    }
 
-		ImageView pieceView = piece.getImageView();
-		
-		pieceView.setX(col * tileSize);
-		pieceView.setY(row * tileSize);
-		getChildren().add(pieceView);
-	}
+    ImageView pieceView = piece.getImageView();
+
+    // Pozycjonowanie
+    pieceView.setX(col * tileSize);
+    pieceView.setY(row * tileSize);
+
+    getChildren().add(pieceView);
+}
+
 
 }
 
