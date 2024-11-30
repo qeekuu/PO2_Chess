@@ -5,6 +5,7 @@ import javafx.scene.image.ImageView;
 import javafx.geometry.Rectangle2D;
 
 import main.Main;
+import main.Board;
 
 /**
  *	Absract class for pieces
@@ -114,6 +115,37 @@ public abstract class Piece
 		}
 		return false;
 	}
+	
+	/*public boolean pieceIsOnDiagonalLine(int targetCol, int targetRow)
+	{
+		int colStep, rowStep;
+		if(targetCol > preCol)
+			colStep = 1;
+		else
+			colStep = -1;
+		
+		if(targetRow > preRow)
+			rowStep = 1;
+		else
+			rowStep = -1;
+
+		int currentCol = preCol + colStep;
+		int currentRow = preRow + rowStep;
+
+		while(currentCol != targetCol && currentRow != targetRow)
+		{
+			if(isSquareQccupied(currentCol, currentRow))
+			{
+				System.out.println("Square is occupied : (" + currentCol + ", " + currentRow + ")");
+				return true;
+			}
+
+			currentCol += colStep;
+			currentRow += rowStep;
+		}
+		System.out.println("Square is not occupied.");
+		return false;
+	}*/
 
     private void loadSprite() {
         String filePath = "/resources/pieces160x480.png";

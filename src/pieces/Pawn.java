@@ -7,13 +7,50 @@ public class Pawn extends Piece
 		super(pieceColor, col, row, Type.PAWN);
 	}
 	
-	private void isValidMove()
-	{
+	public boolean canMove(int preCol, int preRow, int targetCol, int targetRow)
+		{
+			System.out.println("Attempting move from (" + preCol + ", " + preRow + ") to (" + targetCol + ", " + targetRow + ")");
 
-	}
 
-	private void pawnMove()
-	{
-		
-	}
+		if (isWithinBoard(targetCol, targetRow))
+		{
+			if (Math.abs(targetCol - preCol) + Math.abs(targetRow - preRow) == 1)
+			{
+				if (pieceColor == PieceColor.WHITE && targetRow < preRow)
+				{
+					System.out.println("Move allowed.");
+					return true;
+				}
+				else if (pieceColor == PieceColor.BLACK && targetRow > preRow)
+				{
+					System.out.println("Move allowed.");
+					return true;
+				}
+				else
+				{
+					System.out.println("Move invalid: Pionek nie może się cofnąć.");
+				}
+			}
+			else if(Math.abs(targetCol - preCol) == 0 && Math.abs(targetRow - preRow) == 2)
+			{
+				if(pieceColor == PieceColor.WHITE && row == 6 && targetRow < preRow)
+					return true;
+				
+				else if(pieceColor == PieceColor.BLACK && row == 1 && targetRow > preRow)
+					return true;
+
+			}
+        else
+        {
+            System.out.println("Move invalid: Too far.");
+        }
+    }
+    else
+    {
+        System.out.println("Move invalid: Out of bounds.");
+    }
+
+    return false;
+}	
+
 }
