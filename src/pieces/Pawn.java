@@ -6,5 +6,14 @@ public class Pawn extends Piece
 	{
 		super(pieceColor, col, row, Type.PAWN);
 	}
+	
+	private void isValidMove()
+	{
 
+	}
+
+	private void pawnMove()
+	{
+		
+	}
 }

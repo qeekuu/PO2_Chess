@@ -28,7 +28,13 @@ public class Board extends Pane
 	private int rows = 8;
 	private double tileSize = 80;
 	private Piece selectedPiece = null;	
+	private int selectedPiecePreCol;
+	private int selectedPiecePreRow;
+	private ImageView selectedPieceView;
+	private Rectangle currentTileLight = null;
 	
+	boolean canMove;
+	boolean validSquare;
 
 	public Board()
 	{
@@ -121,14 +127,20 @@ private void addPiece(int col, int row, Type type, PieceColor pieceColor)
 	// ruch - umiescic w klasie mouse albo podobnej
 	pieceView.setOnMousePressed(event -> {
 		selectedPiece = piece;
+		selectedPieceView = pieceView;
+		selectedPiecePreCol = piece.getColumn();
+		selectedPiecePreRow = piece.getRow();
 		System.out.println("Selected piece :" + selectedPiece);
 	});
 
 	pieceView.setOnMouseDragged(event -> {
 		if(selectedPiece != null)
 		{
-			pieceView.setX(event.getSceneX() - tileSize / 2);
-			pieceView.setY(event.getSceneY() - tileSize / 2);
+			if(selectedPiece != null)
+			{
+				pieceView.setX(event.getSceneX() - tileSize / 2);
+				pieceView.setY(event.getSceneY() - tileSize / 2);
+			}
 		}
 
 	});
@@ -139,14 +151,35 @@ private void addPiece(int col, int row, Type type, PieceColor pieceColor)
 			// finalizacje ruchu z zaokroagleniem do najblizszego kafelka
 			int newCol = (int) (event.getSceneX() / tileSize);
 			int newRow = (int) (event.getSceneY() / tileSize);
-	
-			// aktualuzacja pozycji figury i widoku
-			piece.setColumn(newCol);
-			piece.setRow(newRow);
-			pieceView.setX(newCol * tileSize);
-			pieceView.setY(newRow * tileSize);
+			
+			// Sprawdzenie czy roch jest poprawny dla wybranej figury
+			if(selectedPiece.getType() == Type.KING)
+			{
+				if(selectedPiece.canMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow))
+				{
+					selectedPiece.setColumn(newCol);
+					selectedPiece.setRow(newRow);
+					pieceView.setX(newCol * tileSize);
+					pieceView.setY(newRow * tileSize);
+					System.out.println("Moved King to: " + "Column: " + newCol + " Row" + newRow);
+				}
+				else
+				{
+					pieceView.setX(selectedPiece.getColumn() * tileSize);
+					pieceView.setY(selectedPiece.getRow() * tileSize);
+					System.out.println("Invalid move!");	
+				}
 
-			System.out.println("Moved piece to: " + "Column: " + newCol + " Row: " + newRow);
+			}
+			else
+			{
+				piece.setColumn(newCol);
+				piece.setRow(newRow);
+				pieceView.setX(newCol * tileSize);
+				pieceView.setY(newRow * tileSize);
+				System.out.println("Piece moved to: Column " + newCol + ", Row " + newRow);
+			}
+
 			selectedPiece = null;
 		}
 	});
