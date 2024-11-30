@@ -44,6 +44,30 @@ public abstract class Piece
 		updateSprite();
 	}
 	
+	public int getColumn()
+	{
+		return col;
+	}
+
+	public void setColumn(int col)
+	{
+		System.out.println("Updating column: previous = " + this.col + ", new = " + col);
+		preCol = this.col;
+		this.col = col;
+	}
+
+	public int getRow()
+	{
+		return row;
+	}
+
+	public void setRow(int row)
+	{
+		System.out.println("Updating row: previous = " + this.row + ", new = " + row);
+		preRow = this.row;
+		this.row = row;
+	}
+
 	public int getX(int col)
 	{
 		return col * 80;
@@ -74,6 +98,21 @@ public abstract class Piece
 	{
 		this.pieceColor = pieceColor;
 		updateSprite();
+	}
+	
+	// abstract method for moving pieces
+	public boolean canMove(int selectedPiecePreCol, int selectedPiecePreRow, int targetCol, int targetRow)
+	{
+		return false;
+	}
+
+	public boolean isWithinBoard(int targetCol, int targetRow)
+	{
+		if(targetCol >= 0 && targetCol <= 7 && targetRow >= 0 && targetRow <= 7)
+		{
+			return true;
+		}
+		return false;
 	}
 
     private void loadSprite() {
