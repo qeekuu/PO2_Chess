@@ -1,5 +1,7 @@
 package main;
 
+import java.util.ArrayList;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.event.ActionEvent;
@@ -11,6 +13,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.ImageView;
 
+import java.util.ArrayList;
+import java.util.List;
 
 import pieces.Type;
 import pieces.PieceColor;
@@ -32,10 +36,8 @@ public class Board extends Pane
 	private int selectedPiecePreRow;
 	private ImageView selectedPieceView;
 	private Rectangle currentTileLight = null;
+	private List<Piece> pieces = new ArrayList<>(); // zapamietanie pozycji
 	
-	boolean canMove;
-	boolean validSquare;
-
 	public Board()
 	{
 		drawBoard();	
@@ -145,46 +147,55 @@ private void addPiece(int col, int row, Type type, PieceColor pieceColor)
 
 	});
 
-	pieceView.setOnMouseReleased(event -> {
-		if(selectedPiece != null)
-		{
-			// finalizacje ruchu z zaokroagleniem do najblizszego kafelka
-			int newCol = (int) (event.getSceneX() / tileSize);
-			int newRow = (int) (event.getSceneY() / tileSize);
-			
-			// Sprawdzenie czy roch jest poprawny dla wybranej figury
-			if(selectedPiece.getType() == Type.KING)
-			{
-				if(selectedPiece.canMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow))
-				{
-					selectedPiece.setColumn(newCol);
-					selectedPiece.setRow(newRow);
-					pieceView.setX(newCol * tileSize);
-					pieceView.setY(newRow * tileSize);
-					System.out.println("Moved King to: " + "Column: " + newCol + " Row" + newRow);
-				}
-				else
-				{
-					pieceView.setX(selectedPiece.getColumn() * tileSize);
-					pieceView.setY(selectedPiece.getRow() * tileSize);
-					System.out.println("Invalid move!");	
-				}
+pieceView.setOnMouseReleased(event -> {
+    if (selectedPiece != null) {
+        // Finalizacja ruchu z zaokrągleniem do najbliższego kafelka
+        int newCol = (int) (event.getSceneX() / tileSize);
+        int newRow = (int) (event.getSceneY() / tileSize);
 
-			}
-			else
-			{
-				piece.setColumn(newCol);
-				piece.setRow(newRow);
-				pieceView.setX(newCol * tileSize);
-				pieceView.setY(newRow * tileSize);
-				System.out.println("Piece moved to: Column " + newCol + ", Row " + newRow);
-			}
+        boolean validMove = false;
 
-			selectedPiece = null;
-		}
-	});
+        switch (selectedPiece.getType()) {
+            case KING:
+            case KNIGHT:
+            case ROOK:
+            case BISHOP:
+			case QUEEN:
+			case PAWN:
+                validMove = selectedPiece.canMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow);
+                break;
+            default:
+                validMove = true;
+                break;
+        }
 
+        if (validMove) {
+            selectedPiece.setColumn(newCol);
+            selectedPiece.setRow(newRow);
+            pieceView.setX(newCol * tileSize);
+            pieceView.setY(newRow * tileSize);
+            System.out.println("Moved " + selectedPiece.getType().toString().toLowerCase() + " to: Column: " + newCol + ", Row: " + newRow);
+        } else {
+            pieceView.setX(selectedPiece.getColumn() * tileSize);
+            pieceView.setY(selectedPiece.getRow() * tileSize);
+            System.out.println("Invalid move!");
+        }
+
+        selectedPiece = null;
+    }
+});
+
+	pieces.add(piece);
     getChildren().add(pieceView);
 }
+	public boolean isSquareQccupied(int col, int row)
+	{
+		for(Piece piece : pieces)
+		{
+			if(piece.getColumn() == col && piece.getRow() == row)
+				return true;
+		}
+		return false;
+	}
 }
 
