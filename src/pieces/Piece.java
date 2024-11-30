@@ -44,6 +44,26 @@ public abstract class Piece
 		updateSprite();
 	}
 	
+	public int getColumn()
+	{
+		return col;
+	}
+
+	public void setColumn(int col)
+	{
+		this.col = col;
+	}
+
+	public int getRow()
+	{
+		return row;
+	}
+
+	public void setRow(int row)
+	{
+		this.row = row;
+	}
+
 	public int getX(int col)
 	{
 		return col * 80;
