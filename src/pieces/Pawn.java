@@ -1,10 +1,12 @@
 package pieces;
 
+import main.Board;
+
 public class Pawn extends Piece
 {
-	public Pawn(PieceColor pieceColor, int col, int row)
+	public Pawn(PieceColor pieceColor, int col, int row, Board board)
 	{
-		super(pieceColor, col, row, Type.PAWN);
+		super(pieceColor, col, row, Type.PAWN, board);
 	}
 	
 	public boolean canMove(int preCol, int preRow, int targetCol, int targetRow)

@@ -23,13 +23,15 @@ public abstract class Piece
 	public Type pieceType;
 	public PieceColor pieceColor;
 
+	protected Board board;
+
     private Image spriteSheet;
     private ImageView imageView;
 	private String color;
 	private int x;
 	private int y;
 
-    public Piece(PieceColor pieceColor, int col, int row, Type pieceType) 
+    public Piece(PieceColor pieceColor, int col, int row, Type pieceType, Board board) 
 	{
 		// this.color = color;
 		this.col = col;
@@ -40,6 +42,7 @@ public abstract class Piece
 		y = getY(row);
 		preCol = col;
 		preRow = row;
+		this.board = board;
 
         loadSprite();
 		updateSprite();
@@ -102,10 +105,7 @@ public abstract class Piece
 	}
 	
 	// abstract method for moving pieces
-	public boolean canMove(int selectedPiecePreCol, int selectedPiecePreRow, int targetCol, int targetRow)
-	{
-		return false;
-	}
+	public abstract boolean canMove(int selectedPiecePreCol, int selectedPiecePreRow, int targetCol, int targetRow);
 
 	public boolean isWithinBoard(int targetCol, int targetRow)
 	{
@@ -115,38 +115,41 @@ public abstract class Piece
 		}
 		return false;
 	}
-	
-	/*public boolean pieceIsOnDiagonalLine(int targetCol, int targetRow)
+
+	public boolean isOnVertivalOrHorizontalLine(int targetCol, int targetRow, int preCol, int preRow)
 	{
-		int colStep, rowStep;
-		if(targetCol > preCol)
-			colStep = 1;
-		else
-			colStep = -1;
-		
-		if(targetRow > preRow)
-			rowStep = 1;
-		else
-			rowStep = -1;
+		if(targetCol != preCol && targetRow != preRow)
+			return false;
 
-		int currentCol = preCol + colStep;
-		int currentRow = preRow + rowStep;
-
-		while(currentCol != targetCol && currentRow != targetRow)
+		// HORIZONTAL
+		if(preRow == targetRow)
 		{
-			if(isSquareQccupied(currentCol, currentRow))
-			{
-				System.out.println("Square is occupied : (" + currentCol + ", " + currentRow + ")");
-				return true;
-			}
-
-			currentCol += colStep;
-			currentRow += rowStep;
+			int firstCol = Math.min(preCol, targetCol);
+			int lastCol = Math.max(preCol, targetCol);
+			for(int col = firstCol + 1; col < lastCol; col++)
+				if(board.isSquareQccupied(col, preRow))
+					return false;
 		}
-		System.out.println("Square is not occupied.");
-		return false;
-	}*/
 
+		//VERTICAL
+		if(preCol == targetCol)
+		{
+			int firstRow = Math.min(preRow, targetRow);
+			int lastRow = Math.max(preRow, targetRow);
+			for(int row = firstRow + 1; row < lastRow; row++)
+				if(board.isSquareQccupied(preCol, row))
+					return false;
+		}
+
+
+		return true;
+	}
+
+	public boolean isOnDiagonalLine(int targetCol, int targetRow, int preCol, int preRow) 
+	{
+		return true;
+	}
+	
     private void loadSprite() {
         String filePath = "/resources/pieces160x480.png";
         this.spriteSheet = new Image(getClass().getResourceAsStream(filePath));

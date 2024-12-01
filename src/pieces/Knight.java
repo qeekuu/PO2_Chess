@@ -1,10 +1,12 @@
 package pieces;
 
+import main.Board;
+
 public class Knight extends Piece
 {
-	public Knight(PieceColor pieceColor, int col, int row)
+	public Knight(PieceColor pieceColor, int col, int row, Board board)
 	{
-		super(pieceColor, col, row, Type.KNIGHT);
+		super(pieceColor, col, row, Type.KNIGHT, board);
 		this.preCol = col;
 		this.preRow = row;
 	}

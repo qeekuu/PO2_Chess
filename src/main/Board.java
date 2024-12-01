@@ -100,23 +100,23 @@ private void addPiece(int col, int row, Type type, PieceColor pieceColor)
     // Tworzymy odpowiedni typ figury w zależności od podanego typu
     switch (type) {
         case PAWN:
-            piece = new Pawn(pieceColor, col, row);
+            piece = new Pawn(pieceColor, col, row, this);
             break;
         case KNIGHT:
-            piece = new Knight(pieceColor, col, row);
+            piece = new Knight(pieceColor, col, row, this);
             break;
         case BISHOP:
-            piece = new Bishop(pieceColor, col, row);
+            piece = new Bishop(pieceColor, col, row, this);
             break;
         case ROOK:
-            piece = new Rook(pieceColor, col, row);
+            piece = new Rook(pieceColor, col, row, this);
             break;
         case QUEEN:
-            piece = new Queen(pieceColor, col, row);
+            piece = new Queen(pieceColor, col, row, this);
             break;
         case KING:
         default:
-            piece = new King(pieceColor, col, row);
+            piece = new King(pieceColor, col, row, this);
             break;
     }
 	
@@ -190,10 +190,14 @@ pieceView.setOnMouseReleased(event -> {
 }
 	public boolean isSquareQccupied(int col, int row)
 	{
-		for(Piece piece : pieces)
+		for(int i = 0; i < pieces.size(); i++)
 		{
+			Piece piece = pieces.get(i);
 			if(piece.getColumn() == col && piece.getRow() == row)
+			{
+				System.out.println("Square occupied by: " + piece.getType() + " at (" + col + ", " + row + ")");
 				return true;
+			}
 		}
 		return false;
 	}
