@@ -18,17 +18,16 @@ public class Bishop extends Piece
 			if(isWithinBoard(targetCol, targetRow))
 			{
 				
-				// if(Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow))
-				// {
-					// System.out.println("Move allowed.");	
-					// return true;
-				// }
-				// else
-				// {
-					// System.out.println("Move invalid: Too far.");
+				if((Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow)) && (isTheSamePieceColor(targetCol, targetRow)))
+				{
+					System.out.println("Move allowed.");	
+					return true;
+				}
+				else
+				{
+					System.out.println("Move invalid: Too far.");
 
-				// }
-				//return isOnDiagonalLine(targetCol, targetRow, preCol, preRow, board);
+				}
 			}
 			else
 			{

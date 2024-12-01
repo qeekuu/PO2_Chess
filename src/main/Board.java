@@ -31,12 +31,13 @@ public class Board extends Pane
 	private int columns = 8;
 	private int rows = 8;
 	private double tileSize = 80;
-	private Piece selectedPiece = null;	
+	private Piece selectedPiece = null;
 	private int selectedPiecePreCol;
 	private int selectedPiecePreRow;
 	private ImageView selectedPieceView;
 	private Rectangle currentTileLight = null;
 	private List<Piece> pieces = new ArrayList<>(); // zapamietanie pozycji
+	private Piece piece;
 	
 	public Board()
 	{
@@ -188,18 +189,23 @@ pieceView.setOnMouseReleased(event -> {
 	pieces.add(piece);
     getChildren().add(pieceView);
 }
-	public boolean isSquareQccupied(int col, int row)
+	public boolean isSquareQccupied(int col, int row) 
 	{
-		for(int i = 0; i < pieces.size(); i++)
+		for (int i = 0; i < pieces.size(); i++) 
 		{
-			Piece piece = pieces.get(i);
-			if(piece.getColumn() == col && piece.getRow() == row)
+			piece = pieces.get(i);
+			if (piece.getColumn() == col && piece.getRow() == row) 
 			{
 				System.out.println("Square occupied by: " + piece.getType() + " at (" + col + ", " + row + ")");
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	public Piece getPiece(int col, int row)
+	{
+		return piece;
 	}
 }
 

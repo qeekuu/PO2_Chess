@@ -18,7 +18,7 @@ public class King extends Piece
 
 		if (isWithinBoard(targetCol, targetRow)) 
 		{
-			if (Math.abs(targetCol - preCol) <= 1 && Math.abs(targetRow - preRow) <= 1) 
+			if ((Math.abs(targetCol - preCol) <= 1 && Math.abs(targetRow - preRow) <= 1) && (isTheSamePieceColor(targetCol, targetRow))) 
 			{
 				System.out.println("Move allowed.");
 				return true;

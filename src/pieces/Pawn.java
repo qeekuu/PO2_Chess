@@ -16,7 +16,7 @@ public class Pawn extends Piece
 
 		if (isWithinBoard(targetCol, targetRow))
 		{
-			if (Math.abs(targetCol - preCol) + Math.abs(targetRow - preRow) == 1)
+			if ((Math.abs(targetCol - preCol) + Math.abs(targetRow - preRow) == 1) && (isTheSamePieceColor(targetCol, targetRow)))
 			{
 				if (pieceColor == PieceColor.WHITE && targetRow < preRow)
 				{
@@ -33,7 +33,7 @@ public class Pawn extends Piece
 					System.out.println("Move invalid: Pionek nie może się cofnąć.");
 				}
 			}
-			else if(Math.abs(targetCol - preCol) == 0 && Math.abs(targetRow - preRow) == 2)
+			else if((Math.abs(targetCol - preCol) == 0) && (Math.abs(targetRow - preRow) == 2) && (isTheSamePieceColor(targetCol, targetRow)))
 			{
 				if(pieceColor == PieceColor.WHITE && row == 6 && targetRow < preRow)
 					return true;

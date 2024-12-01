@@ -18,7 +18,6 @@ public abstract class Piece
 {
     public int col, row, preCol, preRow;
     public boolean isWhite;
-    public String name;
     public int value;
 	public Type pieceType;
 	public PieceColor pieceColor;
@@ -115,12 +114,18 @@ public abstract class Piece
 		}
 		return false;
 	}
-
+	
+	public boolean isTheSamePieceColor(int targetCol, int targetRow)
+	{
+		if((board.isSquareQccupied(targetCol, targetRow)) && (board.getPiece(targetCol, targetRow).getColor().equals(this.pieceColor)))
+				return false;
+		return true;
+	}
 	public boolean isOnVertivalOrHorizontalLine(int targetCol, int targetRow, int preCol, int preRow)
 	{
 		if(targetCol != preCol && targetRow != preRow)
 			return false;
-
+		
 		// HORIZONTAL
 		if(preRow == targetRow)
 		{
@@ -132,7 +137,7 @@ public abstract class Piece
 		}
 
 		//VERTICAL
-		if(preCol == targetCol)
+		else if(preCol == targetCol)
 		{
 			int firstRow = Math.min(preRow, targetRow);
 			int lastRow = Math.max(preRow, targetRow);
@@ -140,8 +145,6 @@ public abstract class Piece
 				if(board.isSquareQccupied(preCol, row))
 					return false;
 		}
-
-
 		return true;
 	}
 

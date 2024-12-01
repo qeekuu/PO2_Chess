@@ -17,7 +17,7 @@ public class Queen extends Piece
 			if(isWithinBoard(targetCol, targetRow))
 			{
 				
-				if((targetCol == preCol || targetRow == preRow) || (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow)))
+				if(((targetCol == preCol || targetRow == preRow) || (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow))) && (isTheSamePieceColor(targetCol, targetRow)))
 				{
 					System.out.println("Move allowed.");	
 					return true;
