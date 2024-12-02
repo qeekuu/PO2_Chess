@@ -123,9 +123,6 @@ public abstract class Piece
 	}
 	public boolean isOnVertivalOrHorizontalLine(int targetCol, int targetRow, int preCol, int preRow)
 	{
-		if(targetCol != preCol && targetRow != preRow)
-			return false;
-		
 		// HORIZONTAL
 		if(preRow == targetRow)
 		{
@@ -150,6 +147,7 @@ public abstract class Piece
 
 	public boolean isOnDiagonalLine(int targetCol, int targetRow, int preCol, int preRow) 
 	{
+
 		return true;
 	}
 	
