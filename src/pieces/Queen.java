@@ -1,10 +1,12 @@
 package pieces;
 
+import main.Board;
+
 public class Queen extends Piece
 {
-	public Queen(PieceColor pieceColor, int col, int row)
+	public Queen(PieceColor pieceColor, int col, int row, Board board)
 	{
-		super(pieceColor, col, row, Type.QUEEN);
+		super(pieceColor, col, row, Type.QUEEN, board);
 	}
 
 	public boolean canMove(int preCol, int preRow, int targetCol, int targetRow)
@@ -15,7 +17,7 @@ public class Queen extends Piece
 			if(isWithinBoard(targetCol, targetRow))
 			{
 				
-				if((targetCol == preCol || targetRow == preRow) || (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow)))
+				if(((targetCol == preCol || targetRow == preRow) || (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow))) && (isTheSamePieceColor(targetCol, targetRow)))
 				{
 					System.out.println("Move allowed.");	
 					return true;

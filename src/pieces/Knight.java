@@ -1,10 +1,12 @@
 package pieces;
 
+import main.Board;
+
 public class Knight extends Piece
 {
-	public Knight(PieceColor pieceColor, int col, int row)
+	public Knight(PieceColor pieceColor, int col, int row, Board board)
 	{
-		super(pieceColor, col, row, Type.KNIGHT);
+		super(pieceColor, col, row, Type.KNIGHT, board);
 		this.preCol = col;
 		this.preRow = row;
 	}
@@ -16,8 +18,7 @@ public class Knight extends Piece
 
 		if(isWithinBoard(targetCol, targetRow))
 		{
-			// 1:2 or 2:1
-			if(Math.abs(targetCol - preCol) * Math.abs(targetRow - preRow) == 2)
+			if((Math.abs(targetCol - preCol) * Math.abs(targetRow - preRow) == 2) && (isTheSamePieceColor(targetCol, targetRow)))
 			{
 				System.out.println("Move allowed.");	
 				return true;

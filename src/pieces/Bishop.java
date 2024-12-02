@@ -1,12 +1,15 @@
 package pieces;
 
+import main.Board;
+
 public class Bishop extends Piece
 {
-	public Bishop(PieceColor pieceColor, int col, int row)
+	public Bishop(PieceColor pieceColor, int col, int row, Board board)
 	{
-		super(pieceColor, col, row, Type.BISHOP);
+		super(pieceColor, col, row, Type.BISHOP, board);
 	}
 
+	@Override
 	public boolean canMove(int preCol, int preRow, int targetCol, int targetRow)
 		{
 			System.out.println("Attempting move from (" + preCol + ", " + preRow + ") to (" + targetCol + ", " + targetRow + ")");
@@ -15,7 +18,7 @@ public class Bishop extends Piece
 			if(isWithinBoard(targetCol, targetRow))
 			{
 				
-				if(Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow))
+				if((Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow)) && (isTheSamePieceColor(targetCol, targetRow)))
 				{
 					System.out.println("Move allowed.");	
 					return true;
