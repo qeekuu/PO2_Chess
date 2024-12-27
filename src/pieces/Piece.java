@@ -147,7 +147,10 @@ public abstract class Piece
 
 	public boolean isOnDiagonalLine(int targetCol, int targetRow, int preCol, int preRow) 
 	{
+		if(Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow))
+		{
 
+		}
 		return true;
 	}
 	
