@@ -147,9 +147,13 @@ public abstract class Piece
 
 	public boolean isOnDiagonalLine(int targetCol, int targetRow, int preCol, int preRow) 
 	{
-		if(Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow))
+		for(int i = 1; i < Math.abs(targetCol - preCol); i++)
 		{
+			int col = preCol + (targetCol > preCol ? i : -i);
+			int row = preRow + (targetRow > preRow ? i : -i);
 
+			if(board.isSquareQccupied(col, row))
+				return false;
 		}
 		return true;
 	}
