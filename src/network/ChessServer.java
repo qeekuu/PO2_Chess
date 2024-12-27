@@ -12,6 +12,16 @@ class ChessServer
 		
 		System.out.println("Client connected");
 
+		InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
+		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+		String str = bufferedReader.readLine();
+		System.out.println("Client response: " + str);
+		
+		PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
+		printWriter.println("Yes");
+		printWriter.flush();
+
 		serverSocket.close();
 	}
 }
