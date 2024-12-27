@@ -7,21 +7,34 @@ class ChessServer
 {
 	public static void main(String[] args) throws IOException
 	{
-		ServerSocket serverSocket = new ServerSocket(3767);
-		Socket socket = serverSocket.accept();
+		try(ServerSocket serverSocket = new ServerSocket(3000))
+		{
+			System.out.println("Server running...");
+
+			Socket clientSocket = serverSocket.accept();
+			System.out.println("Client connected: " + clientSocket.getInetAddress());
 		
-		System.out.println("Client connected");
 
-		InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
-		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+			InputStreamReader inputStreamReader = new InputStreamReader(clientSocket.getInputStream());
+			BufferedReader in = new BufferedReader(inputStreamReader);
+			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 
-		String str = bufferedReader.readLine();
-		System.out.println("Client response: " + str);
-		
-		PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
-		printWriter.println("Yes");
-		printWriter.flush();
+			String strInput;
+			while((strInput = in.readLine()) != null)
+			{
+				System.out.println("Client: " + strInput);
+				if("quit".equalsIgnoreCase(strInput))
+					break;
 
-		serverSocket.close();
+				//odpowiedz do klienta
+				out.println("Server: Received -> " + strInput);
+			}
+			
+			System.out.println("Client disconnected.");
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

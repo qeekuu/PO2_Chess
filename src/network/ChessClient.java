@@ -7,18 +7,34 @@ class ChessClient
 {
 	public static void main(String[] args) throws IOException
 	{
-		Socket socket = new Socket("localhost", 3767);
+		try(Socket socket = new Socket("localhost", 3000))
+		{
+			System.out.println("Connected to server.");
 
-		PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
-		printWriter.println("working");
-		printWriter.flush();
+			InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
+			BufferedReader in = new BufferedReader(inputStreamReader);
+			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-		InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
-		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+			BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
+			String userLine;
 
-		String str = bufferedReader.readLine();
-		System.out.println("Server respone: " + str);
+			System.out.println("Type message");
+			while((userLine = userInput.readLine()) != null)
+			{
+				out.println(userLine);
+				out.flush();
+				if("quit".equalsIgnoreCase(userLine))
+					break;
 
-		socket.close();
+				String response = in.readLine();
+				System.out.println(response);
+			}
+
+			System.out.println("Disconnected form server.");
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
