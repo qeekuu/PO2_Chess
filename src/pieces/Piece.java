@@ -158,34 +158,6 @@ public abstract class Piece
 		return true;
 	}
 
-	public boolean takePiece(int targetCol, int targetRow, int preCol, int preRow, Type type, PieceColor pieceColor)
-	{
-		if(board.isSquareQccupied(targetCol, targetRow))
-		{
-			Piece targetPiece = board.getPiece(targetCol, targetRow);
-
-			if(isTheSamePieceColor(targetCol, targetRow))
-				return false;
-
-			switch(type)
-			{
-				case PAWN:
-					if(Math.abs(targetCol - preCol) == 1 && Math.abs(targetRow - preRow) == 1)
-					{
-						board.removePiece(targetCol, targetRow);
-						System.out.println("piece removed");
-						return true; // udane bicie
-					}
-					break;
-				default:
-					return false;
-			}
-			
-
-		}
-		return true;	
-	}
-
     private void loadSprite() {
         String filePath = "/resources/pieces160x480.png";
         this.spriteSheet = new Image(getClass().getResourceAsStream(filePath));

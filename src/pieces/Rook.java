@@ -20,7 +20,8 @@ public class Rook extends Piece
 				
 				if((targetCol == preCol || targetRow == preRow) && (isTheSamePieceColor(targetCol, targetRow)))
 				{
-					System.out.println("Move allowed.");	
+					System.out.println("Move allowed.");
+					board.removePiece(targetCol, targetRow);
 					return isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow);
 				}
 				else

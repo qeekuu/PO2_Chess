@@ -21,6 +21,7 @@ public class Knight extends Piece
 			if((Math.abs(targetCol - preCol) * Math.abs(targetRow - preRow) == 2) && (isTheSamePieceColor(targetCol, targetRow)))
 			{
 				System.out.println("Move allowed.");
+				board.removePiece(targetCol, targetRow);
 				return true;
 			}
 			else
