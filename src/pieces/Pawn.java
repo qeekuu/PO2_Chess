@@ -42,6 +42,12 @@ public class Pawn extends Piece
 					return true;
 
 			}
+			else if((Math.abs(targetCol - preCol) == 1) && (Math.abs(targetRow - preRow) == 1) && (board.isSquareQccupied(targetCol, targetRow)) && (isTheSamePieceColor(targetCol, targetRow)))
+			{
+				System.out.println("Movle allowed - capturing the piece.");
+				board.removePiece(targetCol, targetRow);
+				return true;
+			}
         else
         {
             System.out.println("Move invalid: Too far.");

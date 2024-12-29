@@ -99,7 +99,8 @@ private void addPiece(int col, int row, Type type, PieceColor pieceColor)
     Piece piece;
 
     // Tworzymy odpowiedni typ figury w zależności od podanego typu
-    switch (type) {
+    switch (type) 
+	{
         case PAWN:
             piece = new Pawn(pieceColor, col, row, this);
             break;
@@ -120,7 +121,8 @@ private void addPiece(int col, int row, Type type, PieceColor pieceColor)
             piece = new King(pieceColor, col, row, this);
             break;
     }
-	
+
+
     ImageView pieceView = piece.getImageView();
 
     // Pozycjonowanie
@@ -207,5 +209,19 @@ pieceView.setOnMouseReleased(event -> {
 	{
 		return piece;
 	}
+
+	public void removePiece(int col, int row)
+	{
+		pieces.removeIf(piece -> {
+			if (piece.getColumn() == col && piece.getRow() == row) {
+				getChildren().remove(piece.getImageView()); // Usunięcie graficznej reprezentacji
+				return true;
+			}
+			return false;
+		});
+
+		System.out.println("Piece removed from (" + col + ", " + row + ")");
+	}
+
 }
 
