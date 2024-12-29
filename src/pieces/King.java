@@ -23,7 +23,20 @@ public class King extends Piece
 				System.out.println("Move allowed.");
 				board.removePiece(targetCol, targetRow);
 				return true;
-			} 
+			}
+			else if((Math.abs(targetCol - preCol) == 3) && (Math.abs(targetRow - preRow) == 0))
+			{
+				if(pieceColor == PieceColor.WHITE && row == 7)
+				{
+					System.out.println("Kingside castling, move allowed.");
+					return true;
+				}
+				if(pieceColor == PieceColor.BLACK && row == 0)
+				{
+					System.out.println("Kingside castling, move allowed.");
+					return true;
+				}
+			}
 			else 
 			{				
 				System.out.println("Move invalid: Too far.");

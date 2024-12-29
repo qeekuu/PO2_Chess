@@ -105,6 +105,13 @@ public abstract class Piece
 	
 	// abstract method for moving pieces
 	public abstract boolean canMove(int selectedPiecePreCol, int selectedPiecePreRow, int targetCol, int targetRow);
+	
+	public boolean moved(int preCol, int preRow, int col, int row)
+	{
+		if(preCol != col || preRow != row)
+			return true;
+		return false;
+	}
 
 	public boolean isWithinBoard(int targetCol, int targetRow)
 	{
