@@ -23,6 +23,7 @@ public abstract class Piece
 	public PieceColor pieceColor;
 
 	protected Board board;
+	protected boolean hasMoved = false;
 
     private Image spriteSheet;
     private ImageView imageView;
@@ -109,8 +110,16 @@ public abstract class Piece
 	public boolean moved(int preCol, int preRow, int col, int row)
 	{
 		if(preCol != col || preRow != row)
+		{
+			hasMoved = true;
 			return true;
+		}
 		return false;
+	}
+
+	public boolean getHasMoved()
+	{
+		return hasMoved;
 	}
 
 	public boolean isWithinBoard(int targetCol, int targetRow)

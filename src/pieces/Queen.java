@@ -21,7 +21,7 @@ public class Queen extends Piece
 				{
 					System.out.println("Move allowed.");	
 					board.removePiece(targetCol, targetRow);
-					return true;
+					return isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow);
 				}
 				else
 				{
