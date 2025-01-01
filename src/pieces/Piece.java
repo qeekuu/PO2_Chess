@@ -23,6 +23,7 @@ public abstract class Piece
 	public PieceColor pieceColor;
 
 	protected Board board;
+	protected boolean hasMoved = false;
 
     private Image spriteSheet;
     private ImageView imageView;
@@ -105,6 +106,21 @@ public abstract class Piece
 	
 	// abstract method for moving pieces
 	public abstract boolean canMove(int selectedPiecePreCol, int selectedPiecePreRow, int targetCol, int targetRow);
+	
+	public boolean moved(int preCol, int preRow, int col, int row)
+	{
+		if(preCol != col || preRow != row)
+		{
+			hasMoved = true;
+			return true;
+		}
+		return false;
+	}
+
+	public boolean getHasMoved()
+	{
+		return hasMoved;
+	}
 
 	public boolean isWithinBoard(int targetCol, int targetRow)
 	{
@@ -147,10 +163,17 @@ public abstract class Piece
 
 	public boolean isOnDiagonalLine(int targetCol, int targetRow, int preCol, int preRow) 
 	{
+		for(int i = 1; i < Math.abs(targetCol - preCol); i++)
+		{
+			int col = preCol + (targetCol > preCol ? i : -i);
+			int row = preRow + (targetRow > preRow ? i : -i);
 
+			if(board.isSquareQccupied(col, row))
+				return false;
+		}
 		return true;
 	}
-	
+
     private void loadSprite() {
         String filePath = "/resources/pieces160x480.png";
         this.spriteSheet = new Image(getClass().getResourceAsStream(filePath));

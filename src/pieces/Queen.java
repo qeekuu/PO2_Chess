@@ -20,7 +20,8 @@ public class Queen extends Piece
 				if(((targetCol == preCol || targetRow == preRow) || (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow))) && (isTheSamePieceColor(targetCol, targetRow)))
 				{
 					System.out.println("Move allowed.");	
-					return true;
+					board.removePiece(targetCol, targetRow);
+					return isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow);
 				}
 				else
 				{

@@ -21,7 +21,8 @@ public class Bishop extends Piece
 				if((Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow)) && (isTheSamePieceColor(targetCol, targetRow)))
 				{
 					System.out.println("Move allowed.");	
-					return true;
+					board.removePiece(targetCol, targetRow);
+					return isOnDiagonalLine(targetCol, targetRow, preCol, preRow);
 				}
 				else
 				{
