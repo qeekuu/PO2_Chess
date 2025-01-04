@@ -207,7 +207,17 @@ pieceView.setOnMouseReleased(event -> {
 	
 	public Piece getPiece(int col, int row)
 	{
-		return piece;
+		for(Piece p : pieces)
+		{
+			if(p.getColumn() == col && p.getRow() == row)
+				return p;
+		}
+		return null;
+	}
+
+	public double getTileSize()
+	{
+		return tileSize;
 	}
 
 	public void removePiece(int col, int row)
@@ -221,6 +231,12 @@ pieceView.setOnMouseReleased(event -> {
 		});
 
 		System.out.println("Piece removed from (" + col + ", " + row + ")");
+	}
+
+	public void clearChildren(int col, int row)
+	{
+		if(piece.getColumn() == col && piece.getRow() == row)
+			getChildren().remove(piece.getImageView());
 	}
 
 }
