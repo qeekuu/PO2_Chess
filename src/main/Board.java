@@ -204,7 +204,70 @@ pieceView.setOnMouseReleased(event -> {
 		}
 		return false;
 	}
+
+	public boolean canAttack(int col, int row)
+	{
+		switch(piece.getType())
+		{
+			case KING:
+				return canKingAttack(col, row);
+			case QUEEN:
+				return piece.canAttack(col, row, col, row);
+			case ROOK:
+				return canRookAttack(col, row);
+			default:
+				return false;
+		}
+	}
 	
+	private boolean canKingAttack(int col, int row) 
+	{
+		int deltaX = Math.abs(piece.getColumn() - col);
+		int deltaY = Math.abs(piece.getRow() - row);
+		return deltaX <= 1 && deltaY <= 1;
+	}
+
+	private boolean canQueenAttack(int col, int row) 
+	{
+		return canRookAttack(col, row) || canBishopAttack(col, row);
+	}
+
+	private boolean canRookAttack(int col, int row) 
+	{
+		return piece.getColumn() == col || piece.getRow() == row;
+	}
+
+	private boolean canBishopAttack(int col, int row) 
+	{
+		return Math.abs(piece.getColumn() - col) == Math.abs(piece.getRow() - row);
+	}
+
+	private boolean canKnightAttack(int col, int row) 
+	{
+		int deltaX = Math.abs(piece.getColumn() - col);
+		int deltaY = Math.abs(piece.getRow() - row);
+		return (deltaX == 2 && deltaY == 1) || (deltaX == 1 && deltaY == 2);
+	}
+
+	private boolean canPawnAttack(int col, int row) 
+	{
+		return Math.abs(piece.getColumn() - col) == 1 && piece.getRow() - row == 1;
+	}
+
+	public boolean isUnderAttack(int col, int row)
+	{
+		for(int i = 0; i < pieces.size(); i++)
+		{
+			piece = pieces.get(i);
+			if(piece.getColumn() == col && piece.getRow() == row)
+			{
+				if(canAttack(col, row))
+					return true;
+			}
+		}
+		return false;
+	}	
+
 	public Piece getPiece(int col, int row)
 	{
 		for(Piece p : pieces)

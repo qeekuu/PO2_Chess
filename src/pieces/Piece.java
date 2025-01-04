@@ -106,6 +106,8 @@ public abstract class Piece
 	
 	// abstract method for moving pieces
 	public abstract boolean canMove(int selectedPiecePreCol, int selectedPiecePreRow, int targetCol, int targetRow);
+
+	public abstract boolean canAttack(int selectedPiecePreCol, int selectedPiecePreRow, int targetCol, int targetRow);
 	
 	public boolean moved(int preCol, int preRow, int col, int row)
 	{

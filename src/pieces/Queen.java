@@ -8,7 +8,8 @@ public class Queen extends Piece
 	{
 		super(pieceColor, col, row, Type.QUEEN, board);
 	}
-
+	
+	@Override
 	public boolean canMove(int preCol, int preRow, int targetCol, int targetRow)
 		{
 			System.out.println("Attempting move from (" + preCol + ", " + preRow + ") to (" + targetCol + ", " + targetRow + ")");
@@ -36,6 +37,13 @@ public class Queen extends Piece
 
 			return false;
 		}
+
+	@Override
+	public boolean canAttack(int preCol, int preROw, int targetCol, int targetRow)
+	{
+			
+		return(((targetCol == preCol || targetRow == preRow) || (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow))) && (isTheSamePieceColor(targetCol, targetRow)));
+	}
 
 
 }

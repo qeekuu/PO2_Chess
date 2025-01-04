@@ -42,22 +42,27 @@ public class King extends Piece
 					}
 					
 					
-					if(board.isSquareQccupied(5, targetRow) && (board.isSquareQccupied(6, targetRow)))
+					if(board.isSquareQccupied(5, targetRow) || (board.isSquareQccupied(6, targetRow)))
+						return false;
+					if(board.isUnderAttack(5, targetRow) || (board.isUnderAttack(6, targetRow)))
 						return false;
 
 					moved(preCol, preRow, targetCol, targetRow); // brak możliwego ruchu takiego jak w warunku po roszadzie
 					int rookTargetCol = 5;
+					System.out.println("ROOK:");
 					rook.setColumn(rookTargetCol);
 					rook.setRow(targetRow);
 					rook.getImageView().setX(rookTargetCol * board.getTileSize());
 					rook.getImageView().setY(targetRow * board.getTileSize());
 					
 					// aktualizacja pozycja dla króla
-					int kingTargetCol = 6;
-					setColumn(kingTargetCol);
-					setRow(targetRow);
-					getImageView().setX(kingTargetCol * board.getTileSize());
-					getImageView().setY(targetRow * board.getTileSize());
+					// Piece king = board.getPiece(4, targetRow);
+					// int kingTargetCol = 6;
+					// System.out.println("KING");
+					// king.setColumn(kingTargetCol);
+					// king.setRow(targetRow);
+					// king.getImageView().setX(kingTargetCol * board.getTileSize());
+					// king.getImageView().setY(targetRow * board.getTileSize());
 					System.out.println("Kingside castling allowed.");
 					return true;
 
@@ -103,4 +108,10 @@ public class King extends Piece
 		}
 		return false;
 	}		
+
+	@Override
+	public boolean canAttack(int preCol, int preRow, int targetCol, int targetRow)
+	{
+		return false;
+	}
 }

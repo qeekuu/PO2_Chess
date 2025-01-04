@@ -37,4 +37,10 @@ public class Knight extends Piece
 
 		return false;
 	}
+
+	@Override
+	public boolean canAttack(int preCol, int preRow, int targetCol, int targetRow)
+	{
+		return false;
+	}
 }
