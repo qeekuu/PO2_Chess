@@ -10,7 +10,7 @@ public class Pawn extends Piece
 	}
 	
 	public boolean canMove(int preCol, int preRow, int targetCol, int targetRow)
-		{
+	{
 			System.out.println("Attempting move from (" + preCol + ", " + preRow + ") to (" + targetCol + ", " + targetRow + ")");
 
 
@@ -58,6 +58,12 @@ public class Pawn extends Piece
     }
 
     return false;
-}	
+	}	
+
+	@Override
+	public boolean canAttack(int preCol, int preRow, int targetCol, int targetRow)
+	{
+		return false;
+	}
 
 }
