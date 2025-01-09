@@ -18,12 +18,12 @@ public class Pawn extends Piece
 		{
 			if ((Math.abs(targetCol - preCol) + Math.abs(targetRow - preRow) == 1) && (isTheSamePieceColor(targetCol, targetRow)))
 			{
-				if (pieceColor == PieceColor.WHITE && targetRow < preRow)
+				if (pieceColor == PieceColor.WHITE && targetRow < preRow && (isBlackPieceColor(targetCol, targetRow)))
 				{
 					System.out.println("Move allowed.");
 					return true;
 				}
-				else if (pieceColor == PieceColor.BLACK && targetRow > preRow)
+				else if (pieceColor == PieceColor.BLACK && targetRow > preRow && (isWhitePieceColor(targetCol, targetRow)))
 				{
 					System.out.println("Move allowed.");
 					return true;

@@ -139,6 +139,21 @@ public abstract class Piece
 				return false;
 		return true;
 	}
+
+	public boolean isWhitePieceColor(int targetCol, int targetRow)
+	{
+		if((board.isSquareQccupied(targetCol, targetRow)) && (board.getPiece(targetCol, targetRow).getColor().equals(PieceColor.WHITE)))
+			return false;
+		return true;
+	}
+
+	public boolean isBlackPieceColor(int targetCol, int targetRow)
+	{
+		if((board.isSquareQccupied(targetCol, targetRow)) && (board.getPiece(targetCol, targetRow).getColor().equals(PieceColor.BLACK)))
+			return false;
+		return true;
+	}
+
 	public boolean isOnVertivalOrHorizontalLine(int targetCol, int targetRow, int preCol, int preRow)
 	{
 		// HORIZONTAL
