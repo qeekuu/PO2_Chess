@@ -30,7 +30,7 @@ public class Pawn extends Piece
 				}
 				else
 				{
-					System.out.println("Move invalid: Pionek nie może się cofnąć.");
+					System.out.println("Move invalid.");
 				}
 			}
 			else if((Math.abs(targetCol - preCol) == 0) && (Math.abs(targetRow - preRow) == 2) && (isTheSamePieceColor(targetCol, targetRow)))
