@@ -4,6 +4,7 @@ import main.Board;
 
 public class Pawn extends Piece
 {
+	private boolean enPassant = false;
 	public Pawn(PieceColor pieceColor, int col, int row, Board board)
 	{
 		super(pieceColor, col, row, Type.PAWN, board);
@@ -39,21 +40,55 @@ public class Pawn extends Piece
 			else if((Math.abs(targetCol - preCol) == 0) && (Math.abs(targetRow - preRow) == 2) && (isTheSamePieceColor(targetCol, targetRow)))
 			{
 				if(pieceColor == PieceColor.WHITE && row == 6 && targetRow < preRow && (isBlackPieceColor(targetCol, targetRow)))
+				{
+					setEnPassant(true);
 					return true;
+				}
 				
 				else if(pieceColor == PieceColor.BLACK && row == 1 && targetRow > preRow && (isWhitePieceColor(targetCol, targetRow)))
+				{
+					setEnPassant(true);
 					return true;
+				}
 
 			}
 			// bicie p oprzekątnej
-			else if((Math.abs(targetCol - preCol) == 1) && (Math.abs(targetRow - preRow) == 1) && (board.isSquareQccupied(targetCol, targetRow)) && (isTheSamePieceColor(targetCol, targetRow)))
+			else if((Math.abs(targetCol - preCol) == 1) && (Math.abs(targetRow - preRow) == 1) && (board.isSquareQccupied(targetCol, targetRow))
+					&& (isTheSamePieceColor(targetCol, targetRow)))
 			{
 				board.removePiece(targetCol, targetRow);
 				return true;
 			}
+			// En passant
+			else if((Math.abs(targetCol - preCol) == 1) && (Math.abs(targetRow - preRow) == 1) && (!board.isSquareQccupied(targetCol, targetRow)))
+			{
+				int enPassantRow;
+				if(pieceColor == PieceColor.WHITE)
+					enPassantRow = targetRow + 1; // dla białych pionek jest poniżej kafelka ataku
+				else
+					enPassantRow = targetRow - 1; // jest nad
+
+				Piece targetPwan = board.getPiece(targetCol, enPassantRow);
+
+				if(targetPwan != null && targetPwan instanceof Pawn)
+				{
+					Pawn possiblePawn = (Pawn) targetPwan; // rzutowanie do pionka
+
+					if(possiblePawn.isEnPassant())
+					{
+						board.removePiece(targetCol, enPassantRow);
+						System.out.println("En passant caputre allowed.");
+						return true;
+					}
+				}
+				else
+				{
+					System.out.println("En Passant not allowed.");
+				}
+			}
         else
         {
-            System.out.println("Move invalid: Too far.");
+            System.out.println("Move invalid.");
         }
     }
     else
@@ -72,6 +107,16 @@ public class Pawn extends Piece
 		if((Math.abs(targetCol - preCol) == 1) && (Math.abs(targetRow - preRow) == 1) && (isTheSamePieceColor(targetCol, targetRow)))
 			return true;
 		return false;
+	}
+
+	public boolean isEnPassant()
+	{
+		return enPassant;
+	}
+
+	public void setEnPassant(boolean enPassant)
+	{
+		this.enPassant = enPassant;
 	}
 
 }
