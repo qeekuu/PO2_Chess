@@ -39,10 +39,17 @@ public class Queen extends Piece
 		}
 
 	@Override
-	public boolean canAttack(int preCol, int preROw, int targetCol, int targetRow)
+	public boolean canAttack(int preCol, int preRow, int targetCol, int targetRow) 
 	{
-			
-		return(((targetCol == preCol || targetRow == preRow) || (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow))) && (isTheSamePieceColor(targetCol, targetRow)));
+		if (!isWithinBoard(targetCol, targetRow)) 
+			return false;
+
+			if(((targetCol == preCol || targetRow == preRow) || (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow)))
+					&& (isTheSamePieceColor(targetCol, targetRow)))
+				return isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow) && isOnDiagonalLine(targetCol, targetRow, preCol, preRow);
+	
+
+		return false;
 	}
 
 

@@ -41,6 +41,12 @@ public class Bishop extends Piece
 	@Override
 	public boolean canAttack(int preCol, int preRow, int targetCol, int targetRow)
 	{
+		if (!isWithinBoard(targetCol, targetRow)) 
+			return false;
+
+		if (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow) && (isTheSamePieceColor(targetCol, targetRow))) 
+			return isOnDiagonalLine(targetCol, targetRow, preCol, preRow);
+
 		return false;
 	}
 

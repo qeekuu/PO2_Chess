@@ -16,8 +16,10 @@ public class Pawn extends Piece
 
 		if (isWithinBoard(targetCol, targetRow))
 		{
+			// o jedno pole
 			if ((Math.abs(targetCol - preCol) + Math.abs(targetRow - preRow) == 1) && (isTheSamePieceColor(targetCol, targetRow)))
 			{
+				// isBlackPieceColor, isWhitePieceColor - brak wchodzenia na pionki
 				if (pieceColor == PieceColor.WHITE && targetRow < preRow && (isBlackPieceColor(targetCol, targetRow)))
 				{
 					System.out.println("Move allowed.");
@@ -30,18 +32,20 @@ public class Pawn extends Piece
 				}
 				else
 				{
-					System.out.println("Move invalid: Pionek nie może się cofnąć.");
+					System.out.println("Move invalid.");
 				}
 			}
+			// o dwa pola
 			else if((Math.abs(targetCol - preCol) == 0) && (Math.abs(targetRow - preRow) == 2) && (isTheSamePieceColor(targetCol, targetRow)))
 			{
-				if(pieceColor == PieceColor.WHITE && row == 6 && targetRow < preRow)
+				if(pieceColor == PieceColor.WHITE && row == 6 && targetRow < preRow && (isBlackPieceColor(targetCol, targetRow)))
 					return true;
 				
-				else if(pieceColor == PieceColor.BLACK && row == 1 && targetRow > preRow)
+				else if(pieceColor == PieceColor.BLACK && row == 1 && targetRow > preRow && (isWhitePieceColor(targetCol, targetRow)))
 					return true;
 
 			}
+			// bicie p oprzekątnej
 			else if((Math.abs(targetCol - preCol) == 1) && (Math.abs(targetRow - preRow) == 1) && (board.isSquareQccupied(targetCol, targetRow)) && (isTheSamePieceColor(targetCol, targetRow)))
 			{
 				board.removePiece(targetCol, targetRow);
@@ -63,6 +67,10 @@ public class Pawn extends Piece
 	@Override
 	public boolean canAttack(int preCol, int preRow, int targetCol, int targetRow)
 	{
+		if(!isWithinBoard(targetCol, targetRow))
+			return false;
+		if((Math.abs(targetCol - preCol) == 1) && (Math.abs(targetRow - preRow) == 1) && (isTheSamePieceColor(targetCol, targetRow)))
+			return true;
 		return false;
 	}
 
