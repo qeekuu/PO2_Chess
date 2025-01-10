@@ -4,6 +4,8 @@ import main.Board;
 
 public class King extends Piece
 {
+	private boolean justCastled = false;
+
 	public King(PieceColor pieceColor, int col, int row, Board board)
 	{
 		super(pieceColor, col, row, Type.KING, board);
@@ -44,10 +46,15 @@ public class King extends Piece
 					
 					if(board.isSquareQccupied(5, targetRow) || (board.isSquareQccupied(6, targetRow)))
 						return false;
-					if(board.isUnderAttack(5, targetRow) || (board.isUnderAttack(6, targetRow)))
+
+					if(board.isUnderAttack(5, targetRow, this.pieceColor) || (board.isUnderAttack(6, targetRow, this.pieceColor)))
 						return false;
 
-					moved(preCol, preRow, targetCol, targetRow); // brak możliwego ruchu takiego jak w warunku po roszadzie
+					this.setColumn(6);
+					this.setRow(preRow);
+					this.getImageView().setX(6 * board.getTileSize());
+					this.getImageView().setY(preRow * board.getTileSize());
+
 					int rookTargetCol = 5;
 					System.out.println("ROOK:");
 					rook.setColumn(rookTargetCol);
@@ -55,14 +62,10 @@ public class King extends Piece
 					rook.getImageView().setX(rookTargetCol * board.getTileSize());
 					rook.getImageView().setY(targetRow * board.getTileSize());
 					
-					// aktualizacja pozycja dla króla
-					// Piece king = board.getPiece(4, targetRow);
-					// int kingTargetCol = 6;
-					// System.out.println("KING");
-					// king.setColumn(kingTargetCol);
-					// king.setRow(targetRow);
-					// king.getImageView().setX(kingTargetCol * board.getTileSize());
-					// king.getImageView().setY(targetRow * board.getTileSize());
+					this.moved(preCol, preRow, 6, targetRow);
+					rook.moved(7, preRow, 5, targetRow);
+
+					justCastled = true;
 					System.out.println("Kingside castling allowed.");
 					return true;
 
@@ -88,15 +91,24 @@ public class King extends Piece
 						return false;
 					}
 
-					if(board.isSquareQccupied(1, targetRow) && (board.isSquareQccupied(2, targetRow)) && (board.isSquareQccupied(3, targetRow)))
+					if(board.isSquareQccupied(1, targetRow) || (board.isSquareQccupied(2, targetRow)) || (board.isSquareQccupied(3, targetRow)))
 						return false;
+					
+					this.setColumn(2);
+					this.setRow(preRow);
+					this.getImageView().setX(2 * board.getTileSize());
+					this.getImageView().setY(preRow * board.getTileSize());
 
-					moved(preCol, preRow, targetCol, targetRow);
 					int rookTargetCol = 3;
 					rook.setColumn(rookTargetCol);
 					rook.setRow(targetRow);
 					rook.getImageView().setX(rookTargetCol * board.getTileSize());
 					rook.getImageView().setY(targetRow * board.getTileSize());
+
+					this.moved(preCol, preRow, 2, targetRow);
+					rook.moved(0, preRow, 3, targetRow);
+
+					justCastled = true;
 					System.out.println("Queenside castling allowed.");
 					return true;
 				}
@@ -113,5 +125,10 @@ public class King extends Piece
 	public boolean canAttack(int preCol, int preRow, int targetCol, int targetRow)
 	{
 		return false;
+	}
+
+	public boolean hasJustCastled()
+	{
+		return justCastled;
 	}
 }
