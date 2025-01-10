@@ -41,6 +41,11 @@ public class Knight extends Piece
 	@Override
 	public boolean canAttack(int preCol, int preRow, int targetCol, int targetRow)
 	{
+		if(!isWithinBoard(targetCol, targetRow))
+			return false;
+		if((Math.abs(targetCol - preCol) * Math.abs(targetRow - preRow) == 2) && (isTheSamePieceColor(targetCol, targetRow)))
+			return true;
+
 		return false;
 	}
 }

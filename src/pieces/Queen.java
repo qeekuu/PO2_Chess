@@ -44,14 +44,10 @@ public class Queen extends Piece
 		if (!isWithinBoard(targetCol, targetRow)) 
 			return false;
 
-		if (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow)) 
-			// Przekątna
-			return isOnDiagonalLine(targetCol, targetRow, preCol, preRow) &&
-				!isTheSamePieceColor(targetCol, targetRow);
-		else if (targetCol == preCol || targetRow == preRow) 
-			// Pion lub poziom
-			return isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow) &&
-				   !isTheSamePieceColor(targetCol, targetRow);
+			if(((targetCol == preCol || targetRow == preRow) || (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow)))
+					&& (isTheSamePieceColor(targetCol, targetRow)))
+				return isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow) && isOnDiagonalLine(targetCol, targetRow, preCol, preRow);
+	
 
 		return false;
 	}

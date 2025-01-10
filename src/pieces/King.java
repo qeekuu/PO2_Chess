@@ -20,6 +20,7 @@ public class King extends Piece
 
 		if (isWithinBoard(targetCol, targetRow)) 
 		{
+			// ruch
 			if ((Math.abs(targetCol - preCol) <= 1 && Math.abs(targetRow - preRow) <= 1) && (isTheSamePieceColor(targetCol, targetRow))) 
 			{
 				System.out.println("Move allowed.");
@@ -27,6 +28,7 @@ public class King extends Piece
 				moved(preCol, preRow, targetCol, targetRow);
 				return true;
 			}
+			// roszada
 			else if((Math.abs(targetCol - preCol) == 3) && (Math.abs(targetRow - preRow) == 0))
 			{
 				if(!hasMoved)
@@ -93,6 +95,9 @@ public class King extends Piece
 
 					if(board.isSquareQccupied(1, targetRow) || (board.isSquareQccupied(2, targetRow)) || (board.isSquareQccupied(3, targetRow)))
 						return false;
+					if(board.isUnderAttack(1, targetRow, this.pieceColor) || (board.isUnderAttack(2, targetRow, this.pieceColor))
+							|| (board.isUnderAttack(3, targetRow, this.pieceColor)))
+						return false;
 					
 					this.setColumn(2);
 					this.setRow(preRow);
@@ -124,6 +129,11 @@ public class King extends Piece
 	@Override
 	public boolean canAttack(int preCol, int preRow, int targetCol, int targetRow)
 	{
+		if(!isWithinBoard(targetCol, targetRow))
+			return false;
+		if((Math.abs(targetCol - preCol) <= 1 && Math.abs(targetRow - preRow) <= 1) && (isTheSamePieceColor(targetCol, targetRow)))
+			return true;
+
 		return false;
 	}
 

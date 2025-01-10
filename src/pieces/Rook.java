@@ -40,6 +40,11 @@ public class Rook extends Piece
 	@Override
 	public boolean canAttack(int preCol, int preRow, int targetCol, int targetRow)
 	{
+		if(!isWithinBoard(targetCol, targetRow))
+			return false;
+		if((targetCol == preCol || targetRow == preRow) && (isTheSamePieceColor(targetCol, targetRow)))
+			return isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow);
+		
 		return false;
 	}
 

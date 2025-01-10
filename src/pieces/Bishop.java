@@ -44,10 +44,8 @@ public class Bishop extends Piece
 		if (!isWithinBoard(targetCol, targetRow)) 
 			return false;
 
-		if (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow)) 
-			// Przekątna
-			return isOnDiagonalLine(targetCol, targetRow, preCol, preRow) &&
-				!isTheSamePieceColor(targetCol, targetRow);
+		if (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow) && (isTheSamePieceColor(targetCol, targetRow))) 
+			return isOnDiagonalLine(targetCol, targetRow, preCol, preRow);
 
 		return false;
 	}

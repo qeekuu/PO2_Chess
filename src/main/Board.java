@@ -215,6 +215,9 @@ pieceView.setOnMouseReleased(event -> {
 		return false;
 	}
 	
+	/**
+	@param defendingColor (unikanie sprawdzania ataku dla tego samego koloru bierek)
+	*/
 	public boolean isUnderAttack(int col, int row, PieceColor defendingColor)
 	{
 		for(Piece piece : pieces)
