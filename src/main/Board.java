@@ -65,7 +65,7 @@ public class Board extends Pane
 	}
 	
 private void setupPieces()
-	{
+{
 		//Black pieces
         addPiece(0, 0, Type.ROOK, PieceColor.BLACK);
 		addPiece(1, 0, Type.KNIGHT, PieceColor.BLACK);
@@ -92,9 +92,9 @@ private void setupPieces()
 
 		for(int i = 0; i < 8; i++)
 			addPiece(i, 6, Type.PAWN, PieceColor.WHITE);
-	}
+}
 
-private void addPiece(int col, int row, Type type, PieceColor pieceColor) 
+public void addPiece(int col, int row, Type type, PieceColor pieceColor) 
 {
     Piece piece;
 
@@ -185,6 +185,12 @@ pieceView.setOnMouseReleased(event -> {
 				pieceView.setX(newCol * tileSize);
 				pieceView.setY(newRow * tileSize);
 				System.out.println("Moved " + selectedPiece.getType().toString().toLowerCase() + " to: Column: " + newCol + ", Row: " + newRow);
+				
+				// Aktualizacja po promocji
+                if (selectedPiece.getType() == Type.PAWN && selectedPiece.canPromote()) 
+				{
+					((Pawn) selectedPiece).handlePromotion();
+                }
 			}
 		}	
 		else 
@@ -234,7 +240,7 @@ pieceView.setOnMouseReleased(event -> {
 		}
 		return false;
 	}
-
+	
 	public Piece getPiece(int col, int row)
 	{
 		for(Piece p : pieces)
@@ -262,7 +268,7 @@ pieceView.setOnMouseReleased(event -> {
 
 		System.out.println("Piece removed from (" + col + ", " + row + ")");
 	}
-
+	
 	public void clearChildren(int col, int row)
 	{
 		if(piece.getColumn() == col && piece.getRow() == row)

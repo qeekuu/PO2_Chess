@@ -23,11 +23,13 @@ public class Pawn extends Piece
 				// isBlackPieceColor, isWhitePieceColor - brak wchodzenia na pionki
 				if (pieceColor == PieceColor.WHITE && targetRow < preRow && (isBlackPieceColor(targetCol, targetRow)))
 				{
+					handlePromotion();
 					System.out.println("Move allowed.");
 					return true;
 				}
 				else if (pieceColor == PieceColor.BLACK && targetRow > preRow && (isWhitePieceColor(targetCol, targetRow)))
 				{
+					handlePromotion();
 					System.out.println("Move allowed.");
 					return true;
 				}
@@ -42,12 +44,14 @@ public class Pawn extends Piece
 				if(pieceColor == PieceColor.WHITE && row == 6 && targetRow < preRow && (isBlackPieceColor(targetCol, targetRow)))
 				{
 					setEnPassant(true);
+
 					return true;
 				}
 				
 				else if(pieceColor == PieceColor.BLACK && row == 1 && targetRow > preRow && (isWhitePieceColor(targetCol, targetRow)))
 				{
 					setEnPassant(true);
+	
 					return true;
 				}
 
@@ -57,6 +61,7 @@ public class Pawn extends Piece
 					&& (isTheSamePieceColor(targetCol, targetRow)))
 			{
 				board.removePiece(targetCol, targetRow);
+
 				return true;
 			}
 			// En passant
@@ -66,7 +71,7 @@ public class Pawn extends Piece
 				if(pieceColor == PieceColor.WHITE)
 					enPassantRow = targetRow + 1; // dla białych pionek jest poniżej kafelka ataku
 				else
-					enPassantRow = targetRow - 1; // jest nad
+					enPassantRow = targetRow - 1; // jest nad dla czarnych
 
 				Piece targetPwan = board.getPiece(targetCol, enPassantRow);
 
@@ -77,6 +82,7 @@ public class Pawn extends Piece
 					if(possiblePawn.isEnPassant())
 					{
 						board.removePiece(targetCol, enPassantRow);
+
 						System.out.println("En passant caputre allowed.");
 						return true;
 					}
@@ -118,5 +124,4 @@ public class Pawn extends Piece
 	{
 		this.enPassant = enPassant;
 	}
-
 }

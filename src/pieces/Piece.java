@@ -2,6 +2,20 @@ package pieces;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 
 import main.Main;
@@ -27,9 +41,6 @@ public abstract class Piece
 
     private Image spriteSheet;
     private ImageView imageView;
-	private String color;
-	private int x;
-	private int y;
 
     public Piece(PieceColor pieceColor, int col, int row, Type pieceType, Board board) 
 	{
@@ -38,8 +49,6 @@ public abstract class Piece
 		this.row = row;
 		this.pieceType = pieceType;
 		this.pieceColor = pieceColor;
-		x = getX(col);
-		y = getY(row);
 		preCol = col;
 		preRow = row;
 		this.board = board;
@@ -109,6 +118,85 @@ public abstract class Piece
 
 	public abstract boolean canAttack(int selectedPiecePreCol, int selectedPiecePreRow, int targetCol, int targetRow);
 	
+	public boolean canPromote()
+	{
+		if(pieceType == Type.PAWN)
+		{
+			if(pieceColor == PieceColor.WHITE && row == 0 || pieceColor == PieceColor.BLACK && row == 7)
+				return true;
+		}
+
+		return false;
+	}
+
+	public void handlePromotion()
+	{
+		if(canPromote())
+		{
+			System.out.println("Promotion available. Promotnig pawn...");
+			// board.removePiece(col, row);
+			// board.addPiece(col, row, Type.QUEEN, pieceColor);
+
+			VBox promotionOptions = new VBox(10);
+			promotionOptions.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8); -fx-padding: 20;");
+			promotionOptions.setAlignment(Pos.CENTER);
+			
+			Text promotionText = new Text("Choose a piece for promotion: ");
+			promotionText.setFill(Color.WHITE);
+
+			Button queenButton = new Button("Queen");
+			Button rookButton = new Button("Rook");
+			Button bishopButton = new Button("Bishop");
+			Button knightButton = new Button("Knight");
+
+			//Styl przyciskó
+			queenButton.setStyle("-fx-font-size: 14px; -fx-padding: 10;");
+			rookButton.setStyle("-fx-font-size: 14px; -fx-padding: 10;");
+			bishopButton.setStyle("-fx-font-size: 14px; -fx-padding: 10;");
+			knightButton.setStyle("-fx-font-size: 14px; -fx-padding: 10;");	
+
+			//Zdarzenia przycisków
+			queenButton.setOnAction(e -> {
+				promoteTo(Type.QUEEN);
+				removePromotionOptions(promotionOptions);
+			});
+
+			rookButton.setOnAction(e -> {
+				promoteTo(Type.ROOK);
+				removePromotionOptions(promotionOptions);
+			});
+
+			bishopButton.setOnAction(e -> {
+				promoteTo(Type.BISHOP);
+				removePromotionOptions(promotionOptions);
+			});
+
+			knightButton.setOnAction(e -> {
+				promoteTo(Type.KNIGHT);
+				removePromotionOptions(promotionOptions);
+			});
+
+			promotionOptions.getChildren().addAll(promotionText, queenButton, rookButton, bishopButton, knightButton);
+			
+			// dodanie do sceny
+			StackPane root = (StackPane) board.getScene().getRoot();
+			root.getChildren().add(promotionOptions);
+		}
+	}
+
+	private void removePromotionOptions(VBox promotionOptions) 
+	{
+		StackPane root = (StackPane) board.getScene().getRoot();
+		root.getChildren().remove(promotionOptions);
+	}
+
+	private void promoteTo(Type newType) 
+	{
+		board.removePiece(col, row);
+		board.addPiece(col, row, newType, pieceColor);
+		System.out.println("Pawn promoted to " + newType);
+	}
+
 	public boolean moved(int preCol, int preRow, int col, int row)
 	{
 		if(preCol != col || preRow != row)
