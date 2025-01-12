@@ -388,7 +388,10 @@ pieceView.setOnMouseReleased(event -> {
 				VBox gameOptions = new VBox(10);
 				gameOptions.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8); -fx-padding: 20;");
 				gameOptions.setAlignment(Pos.CENTER);
-			
+		
+				Text gameOverText = new Text("Game Over.");
+				gameOverText.setFill(Color.WHITE);
+
 				Button playAgainButton = new Button("Play again");
 				Button quitButton = new Button("Quit");
 
@@ -407,7 +410,7 @@ pieceView.setOnMouseReleased(event -> {
 					System.exit(0);
 				});
 
-				gameOptions.getChildren().addAll(playAgainButton, quitButton);
+				gameOptions.getChildren().addAll(gameOverText, playAgainButton, quitButton);
 			
 				// dodanie do sceny
 				StackPane root = (StackPane) getScene().getRoot();
