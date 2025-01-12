@@ -20,11 +20,16 @@ public class Knight extends Piece
 		{
 			if((Math.abs(targetCol - preCol) * Math.abs(targetRow - preRow) == 2) && (isTheSamePieceColor(targetCol, targetRow)))
 			{
+				if(!board.tryMovePiece(this, targetCol, targetRow))
+				{
+					System.out.println("King is under attack!");
+					return false;
+				}
+	
 				System.out.println("Move allowed.");
-				board.removePiece(targetCol, targetRow);
 				return true;
 			}
-			else
+			else 
 			{
 				System.out.println("Move invalid: Too far.");
 

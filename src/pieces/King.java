@@ -5,6 +5,7 @@ import main.Board;
 public class King extends Piece
 {
 	private boolean justCastled = false;
+	private boolean isCheck = false;
 
 	public King(PieceColor pieceColor, int col, int row, Board board)
 	{
@@ -23,10 +24,24 @@ public class King extends Piece
 			// ruch
 			if ((Math.abs(targetCol - preCol) <= 1 && Math.abs(targetRow - preRow) <= 1) && (isTheSamePieceColor(targetCol, targetRow))) 
 			{
-				System.out.println("Move allowed.");
-				board.removePiece(targetCol, targetRow);
-				moved(preCol, preRow, targetCol, targetRow);
-				return true;
+				// szach
+				if(board.isUnderAttack(targetCol, targetRow, pieceColor, pieceType))
+				{
+					System.out.println("King cannot move into check.");
+					return false;
+				}
+				if(board.isKingInCheck(this.pieceColor))
+				{
+					if(!board.isUnderAttack(targetCol, targetRow, pieceColor, pieceType))
+						return true;
+					System.out.println("Check");
+					return false;
+				}
+
+					System.out.println("Move allowed.");
+					board.removePiece(targetCol, targetRow);
+					moved(preCol, preRow, targetCol, targetRow);
+					return true;
 			}
 			// roszada
 			else if((Math.abs(targetCol - preCol) == 3) && (Math.abs(targetRow - preRow) == 0))
@@ -49,7 +64,7 @@ public class King extends Piece
 					if(board.isSquareQccupied(5, targetRow) || (board.isSquareQccupied(6, targetRow)))
 						return false;
 
-					if(board.isUnderAttack(5, targetRow, this.pieceColor) || (board.isUnderAttack(6, targetRow, this.pieceColor)))
+					if(board.isUnderAttack(5, targetRow, this.pieceColor, this.pieceType) || (board.isUnderAttack(6, targetRow, this.pieceColor, this.pieceType)))
 						return false;
 
 					this.setColumn(6);
@@ -95,8 +110,9 @@ public class King extends Piece
 
 					if(board.isSquareQccupied(1, targetRow) || (board.isSquareQccupied(2, targetRow)) || (board.isSquareQccupied(3, targetRow)))
 						return false;
-					if(board.isUnderAttack(1, targetRow, this.pieceColor) || (board.isUnderAttack(2, targetRow, this.pieceColor))
-							|| (board.isUnderAttack(3, targetRow, this.pieceColor)))
+					if(board.isUnderAttack(1, targetRow, this.pieceColor, this.pieceType) 
+							|| (board.isUnderAttack(2, targetRow, this.pieceColor, this.pieceType)) 
+							|| (board.isUnderAttack(3, targetRow, this.pieceColor, this.pieceType)))
 						return false;
 					
 					this.setColumn(2);

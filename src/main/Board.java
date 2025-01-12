@@ -8,10 +8,15 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.ImageView;
+import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +43,7 @@ public class Board extends Pane
 	private Rectangle currentTileLight = null;
 	private List<Piece> pieces = new ArrayList<>(); // zapamietanie pozycji
 	private Piece piece;
+	private boolean gameOver = false;
 	
 	public Board()
 	{
@@ -65,7 +71,7 @@ public class Board extends Pane
 	}
 	
 private void setupPieces()
-	{
+{
 		//Black pieces
         addPiece(0, 0, Type.ROOK, PieceColor.BLACK);
 		addPiece(1, 0, Type.KNIGHT, PieceColor.BLACK);
@@ -92,9 +98,9 @@ private void setupPieces()
 
 		for(int i = 0; i < 8; i++)
 			addPiece(i, 6, Type.PAWN, PieceColor.WHITE);
-	}
+}
 
-private void addPiece(int col, int row, Type type, PieceColor pieceColor) 
+public void addPiece(int col, int row, Type type, PieceColor pieceColor) 
 {
     Piece piece;
 
@@ -131,6 +137,8 @@ private void addPiece(int col, int row, Type type, PieceColor pieceColor)
 
 	// ruch - umiescic w klasie mouse albo podobnej
 	pieceView.setOnMousePressed(event -> {
+		if(gameOver)
+			return;
 		selectedPiece = piece;
 		selectedPieceView = pieceView;
 		selectedPiecePreCol = piece.getColumn();
@@ -139,6 +147,8 @@ private void addPiece(int col, int row, Type type, PieceColor pieceColor)
 	});
 
 	pieceView.setOnMouseDragged(event -> {
+		if(gameOver)
+			return;
 		if(selectedPiece != null)
 		{
 			if(selectedPiece != null)
@@ -151,6 +161,8 @@ private void addPiece(int col, int row, Type type, PieceColor pieceColor)
 	});
 
 pieceView.setOnMouseReleased(event -> {
+	if(gameOver)
+		return;
     if (selectedPiece != null) {
         // Finalizacja ruchu z zaokrągleniem do najbliższego kafelka
         int newCol = (int) (event.getSceneX() / tileSize);
@@ -185,6 +197,21 @@ pieceView.setOnMouseReleased(event -> {
 				pieceView.setX(newCol * tileSize);
 				pieceView.setY(newRow * tileSize);
 				System.out.println("Moved " + selectedPiece.getType().toString().toLowerCase() + " to: Column: " + newCol + ", Row: " + newRow);
+				
+				// Aktualizacja po promocji
+                if (selectedPiece.getType() == Type.PAWN && selectedPiece.canPromote()) 
+				{
+					((Pawn) selectedPiece).handlePromotion();
+                }
+				//mat
+				PieceColor currentColor = selectedPiece.getColor();
+				PieceColor opponetColor = (currentColor == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
+				if(isCheckmate(opponetColor))
+				{
+					System.out.println("Checkmate: " + currentColor + " wins!");
+					gameOver = true;
+					gameOverWindow();
+				}
 			}
 		}	
 		else 
@@ -216,9 +243,9 @@ pieceView.setOnMouseReleased(event -> {
 	}
 	
 	/**
-	@param defendingColor (unikanie sprawdzania ataku dla tego samego koloru bierek)
+	* @param defendingColor (unikanie sprawdzania ataku dla tego samego koloru bierek)
 	*/
-	public boolean isUnderAttack(int col, int row, PieceColor defendingColor)
+	public boolean isUnderAttack(int col, int row, PieceColor defendingColor, Type type)
 	{
 		for(Piece piece : pieces)
 		{
@@ -233,6 +260,180 @@ pieceView.setOnMouseReleased(event -> {
 			}
 		}
 		return false;
+	}
+
+	public boolean isKingInCheck(PieceColor color)
+	{
+		King king = null;
+		for(Piece piece : pieces)
+		{
+			if(piece.getType() == Type.KING && piece.getColor() == color)
+			{
+				king = (King) piece;
+				break;
+			}
+		}
+
+		// awaryjnie jesli nie ma krola
+		if(king == null)
+			return false;
+
+		int kingCol = king.getColumn();
+		int kingRow = king.getRow();
+
+		return isUnderAttack(kingCol, kingRow, color, Type.KING);
+		
+	}
+
+	/**
+	* Tymczasowo wykonuje ruch figurą 'piece' na pole (targetCol, targetRow),
+	* sprawdza, czy król nadal jest w szachu. Jeżeli tak – cofa ruch.
+	* Jeśli nie – pozostawia figurę na nowym polu.
+	*
+	* @param piece     figura, którą próbujemy ruszyć
+	* @param targetCol kolumna docelowa
+	* @param targetRow wiersz docelowy
+	* @return true, jeśli ruch jest legalny (król nie w szachu),
+	*         false w przeciwnym razie (ruch cofnięty)
+	*/
+	public boolean tryMovePiece(Piece piece, int targetCol, int targetRow) 
+	{
+		int oldCol = piece.getColumn();
+		int oldRow = piece.getRow();
+  
+		Piece captured = getPiece(targetCol, targetRow);
+
+		// jesli jest figura zbij
+		if (captured != null) 
+		{
+			removePiece(targetCol, targetRow);
+		}
+		
+		// aktualizacja pozycjib
+		piece.setColumn(targetCol);
+		piece.setRow(targetRow);
+
+		boolean stillInCheck = isKingInCheck(piece.getColor());
+
+		if (stillInCheck) 
+		{
+			// przywróć figurę na starą pozycję
+			piece.setColumn(oldCol);
+			piece.setRow(oldRow);
+
+			// jesli zbito figure a dalej szach to ja przywroc
+			if (captured != null) 
+			{
+				pieces.add(captured);
+				getChildren().add(captured.getImageView());
+			}
+			return false;
+		}
+		return true;
+	}
+
+	public boolean isCheckmate(PieceColor color) 
+	{
+		// jesli nie wystepuje szach to nie moze wystapic mat
+		if (!isKingInCheck(color)) 
+			return false; 
+	
+		for(Piece piece : pieces)
+		{
+			if(piece.getColor() == color)
+			{
+				int orginalCol = piece.getColumn();
+				int originalRow = piece.getRow();
+
+				// Sprawdzenie wszystkich możliwości
+				for(int targetCol = 0; targetCol < 8; targetCol++)
+					for(int targetRow = 0; targetRow < 8; targetRow++)
+						if(piece.canMove(orginalCol, originalRow, targetCol, targetRow))
+						{
+							Piece capturedPiece = getPiece(targetCol, targetRow);
+
+							// próba ruchu
+							piece.setColumn(targetCol);
+							piece.setRow(targetRow);
+							if(capturedPiece != null)
+								removePiece(targetCol, targetRow);
+
+							boolean kingStillInCheck = isKingInCheck(color);
+
+							// cofniecie ruchu, powrót do starej pozycji
+							piece.setColumn(orginalCol);
+							piece.setRow(originalRow);
+							if(capturedPiece != null)
+							{
+								pieces.add(capturedPiece);
+								getChildren().add(capturedPiece.getImageView());
+							}
+
+							if(!kingStillInCheck)
+								return false;
+						}
+			}
+		}
+		return true; // mat
+	}
+
+	public void gameOverWindow()
+	{
+		if(gameOver)
+			{
+				System.out.println("Game Over");
+				// board.removePiece(col, row);
+				// board.addPiece(col, row, Type.QUEEN, pieceColor);
+
+				VBox gameOptions = new VBox(10);
+				gameOptions.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8); -fx-padding: 20;");
+				gameOptions.setAlignment(Pos.CENTER);
+			
+				Button playAgainButton = new Button("Play again");
+				Button quitButton = new Button("Quit");
+
+				//Styl przyciskó
+				playAgainButton.setStyle("-fx-font-size: 14px; -fx-padding: 10;");
+				quitButton.setStyle("-fx-font-size: 14px; -fx-padding: 10;");
+
+				//Zdarzenia przycisków
+				playAgainButton.setOnAction(e -> {
+					resetBoard();
+					removeGameOverOptions(gameOptions);
+				});
+
+				quitButton.setOnAction(e -> {
+					removeGameOverOptions(gameOptions);
+					System.exit(0);
+				});
+
+				gameOptions.getChildren().addAll(playAgainButton, quitButton);
+			
+				// dodanie do sceny
+				StackPane root = (StackPane) getScene().getRoot();
+				root.getChildren().add(gameOptions);
+		}
+	
+	}
+
+	private void removeGameOverOptions(VBox gameOptions) 
+	{
+		StackPane root = (StackPane) getScene().getRoot();
+		root.getChildren().remove(gameOptions);
+	}
+	
+	private void resetBoard()
+	{
+		// usuniecie wszystkich bierek
+		getChildren().removeIf(node -> node instanceof ImageView);
+		pieces.clear();
+
+		// ponowne ustawieni
+		setupPieces();
+
+		//reset stanul;
+		gameOver = false;
+		selectedPiece = null;
 	}
 
 	public Piece getPiece(int col, int row)
@@ -262,7 +463,7 @@ pieceView.setOnMouseReleased(event -> {
 
 		System.out.println("Piece removed from (" + col + ", " + row + ")");
 	}
-
+	
 	public void clearChildren(int col, int row)
 	{
 		if(piece.getColumn() == col && piece.getRow() == row)

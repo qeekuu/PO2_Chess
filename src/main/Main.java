@@ -30,8 +30,6 @@ public class Main extends Application
 
 
 		StackPane layout = new StackPane();
-		// layout.setAlignment(Pos.CENTER);
-		// layout.setPadding(new Insets(80));
 
 		//SZACHOWNICA BOARD.java
 		Board chessboard = new Board();
@@ -43,18 +41,6 @@ public class Main extends Application
 
 		Scene scene = new Scene(layout, 900, 640, Color.BLACK);
 
-		// scene.setOnKeyPressed(event -> {
-			// if (event.getCode() == KeyCode.ENTER) { 
-				// System.out.println("Enter Key Pressed");
-			// }
-		// });
-
-		// scene.setOnKeyReleased(event -> {
-			// System.out.println("Key released: " + event.getCode());
-		// });
-
-
-
 		//Image icon = new Image("/resources/chess.png");
 		//primaryStage.getIcons().add(icon);
 		primaryStage.setScene(scene);
@@ -62,10 +48,7 @@ public class Main extends Application
 		primaryStage.show();
 		primaryStage.setResizable(false);
 		// primaryStage.setResizable(false);	
-
-		// Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-		// primaryStage.setX((primScreenBounds.getWidth() - primaryStage.getWidth()) / 2);
-		// primaryStage.setY((primaryStage.getHeight() - primaryStage.getHeight()) / 2);
+		layout.setStyle("-fx-background: black;"); // po promocji
 	}
 	
 	public static void main(String[] args)
