@@ -8,10 +8,15 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.image.ImageView;
+import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -205,6 +210,7 @@ pieceView.setOnMouseReleased(event -> {
 				{
 					System.out.println("Checkmate: " + currentColor + " wins!");
 					gameOver = true;
+					gameOverWindow();
 				}
 			}
 		}	
@@ -326,50 +332,109 @@ pieceView.setOnMouseReleased(event -> {
 		return true;
 	}
 
-public boolean isCheckmate(PieceColor color) 
-{
-    if (!isKingInCheck(color)) 
+	public boolean isCheckmate(PieceColor color) 
 	{
-        return false; 
-    }
+		// jesli nie wystepuje szach to nie moze wystapic mat
+		if (!isKingInCheck(color)) 
+			return false; 
 	
-	for(Piece piece : pieces)
-	{
-		if(piece.getColor() == color)
+		for(Piece piece : pieces)
 		{
-			int orginalCol = piece.getColumn();
-			int originalRow = piece.getRow();
+			if(piece.getColor() == color)
+			{
+				int orginalCol = piece.getColumn();
+				int originalRow = piece.getRow();
 
-			// Sprawdzenie wszystkich możliwości
-			for(int targetCol = 0; targetCol < 8; targetCol++)
-				for(int targetRow = 0; targetRow < 8; targetRow++)
-					if(piece.canMove(orginalCol, originalRow, targetCol, targetRow))
-					{
-						Piece capturedPiece = getPiece(targetCol, targetRow);
+				// Sprawdzenie wszystkich możliwości
+				for(int targetCol = 0; targetCol < 8; targetCol++)
+					for(int targetRow = 0; targetRow < 8; targetRow++)
+						if(piece.canMove(orginalCol, originalRow, targetCol, targetRow))
+						{
+							Piece capturedPiece = getPiece(targetCol, targetRow);
 
-						// próba ruchu
-						piece.setColumn(targetCol);
-						piece.setRow(targetRow);
-						if(capturedPiece != null)
-							removePiece(targetCol, targetRow);
+							// próba ruchu
+							piece.setColumn(targetCol);
+							piece.setRow(targetRow);
+							if(capturedPiece != null)
+								removePiece(targetCol, targetRow);
 
-						boolean kingStillInCheck = isKingInCheck(color);
+							boolean kingStillInCheck = isKingInCheck(color);
 
-						// cofniecie ruchu, powrót do starej pozycji
-						piece.setColumn(orginalCol);
-						piece.setRow(originalRow);
-						if(capturedPiece != null)
-							pieces.add(capturedPiece);
+							// cofniecie ruchu, powrót do starej pozycji
+							piece.setColumn(orginalCol);
+							piece.setRow(originalRow);
+							if(capturedPiece != null)
+							{
+								pieces.add(capturedPiece);
+								getChildren().add(capturedPiece.getImageView());
+							}
 
-						if(!kingStillInCheck)
-							return false;
-					}
+							if(!kingStillInCheck)
+								return false;
+						}
+			}
 		}
+		return true; // mat
 	}
-    return true; // mat
-}
 
+	public void gameOverWindow()
+	{
+		if(gameOver)
+			{
+				System.out.println("Game Over");
+				// board.removePiece(col, row);
+				// board.addPiece(col, row, Type.QUEEN, pieceColor);
 
+				VBox gameOptions = new VBox(10);
+				gameOptions.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8); -fx-padding: 20;");
+				gameOptions.setAlignment(Pos.CENTER);
+			
+				Button playAgainButton = new Button("Play again");
+				Button quitButton = new Button("Quit");
+
+				//Styl przyciskó
+				playAgainButton.setStyle("-fx-font-size: 14px; -fx-padding: 10;");
+				quitButton.setStyle("-fx-font-size: 14px; -fx-padding: 10;");
+
+				//Zdarzenia przycisków
+				playAgainButton.setOnAction(e -> {
+					resetBoard();
+					removeGameOverOptions(gameOptions);
+				});
+
+				quitButton.setOnAction(e -> {
+					removeGameOverOptions(gameOptions);
+					System.exit(0);
+				});
+
+				gameOptions.getChildren().addAll(playAgainButton, quitButton);
+			
+				// dodanie do sceny
+				StackPane root = (StackPane) getScene().getRoot();
+				root.getChildren().add(gameOptions);
+		}
+	
+	}
+
+	private void removeGameOverOptions(VBox gameOptions) 
+	{
+		StackPane root = (StackPane) getScene().getRoot();
+		root.getChildren().remove(gameOptions);
+	}
+	
+	private void resetBoard()
+	{
+		// usuniecie wszystkich bierek
+		getChildren().removeIf(node -> node instanceof ImageView);
+		pieces.clear();
+
+		// ponowne ustawieni
+		setupPieces();
+
+		//reset stanul;
+		gameOver = false;
+		selectedPiece = null;
+	}
 
 	public Piece getPiece(int col, int row)
 	{
