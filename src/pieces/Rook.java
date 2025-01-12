@@ -18,12 +18,17 @@ public class Rook extends Piece
 			if(isWithinBoard(targetCol, targetRow))
 			{
 				
-				if((targetCol == preCol || targetRow == preRow) && (isTheSamePieceColor(targetCol, targetRow)))
+				if((targetCol == preCol || targetRow == preRow) && (isTheSamePieceColor(targetCol, targetRow)) && (isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow)))
 				{
+					if(!board.tryMovePiece(this, targetCol, targetRow))
+					{
+						System.out.println("King is under attack!");
+						return false;
+					}
 					System.out.println("Move allowed.");
 					moved(preCol, preRow, targetCol, targetRow); // roszada
-					board.removePiece(targetCol, targetRow);
-					return isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow);
+					// return isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow);
+					return true;
 				}
 				else
 				{

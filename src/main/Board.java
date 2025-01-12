@@ -174,6 +174,11 @@ pieceView.setOnMouseReleased(event -> {
 
         if (validMove) 
 		{
+
+			// if (isCheckmate(opponentColor)) 
+			// {
+				// System.out.println("Szach i mat! Wygrywa " + selectedPiece.getColor());
+			// }
 			if(selectedPiece.getType() == Type.KING && ((King) selectedPiece).hasJustCastled())
 			{
 				System.out.println("Castlinh");
@@ -222,9 +227,9 @@ pieceView.setOnMouseReleased(event -> {
 	}
 	
 	/**
-	@param defendingColor (unikanie sprawdzania ataku dla tego samego koloru bierek)
+	* @param defendingColor (unikanie sprawdzania ataku dla tego samego koloru bierek)
 	*/
-	public boolean isUnderAttack(int col, int row, PieceColor defendingColor)
+	public boolean isUnderAttack(int col, int row, PieceColor defendingColor, Type type)
 	{
 		for(Piece piece : pieces)
 		{
@@ -240,7 +245,93 @@ pieceView.setOnMouseReleased(event -> {
 		}
 		return false;
 	}
-	
+
+	public boolean isKingInCheck(PieceColor color)
+	{
+		King king = null;
+		for(Piece piece : pieces)
+		{
+			if(piece.getType() == Type.KING && piece.getColor() == color)
+			{
+				king = (King) piece;
+				break;
+			}
+		}
+
+		// awaryjnie jesli nie ma krola
+		if(king == null)
+			return false;
+
+		int kingCol = king.getColumn();
+		int kingRow = king.getRow();
+
+		return isUnderAttack(kingCol, kingRow, color, Type.KING);
+		
+	}
+
+	/**
+	* Tymczasowo wykonuje ruch figurą 'piece' na pole (targetCol, targetRow),
+	* sprawdza, czy król nadal jest w szachu. Jeżeli tak – cofa ruch.
+	* Jeśli nie – pozostawia figurę na nowym polu.
+	*
+	* @param piece     figura, którą próbujemy ruszyć
+	* @param targetCol kolumna docelowa
+	* @param targetRow wiersz docelowy
+	* @return true, jeśli ruch jest legalny (król nie w szachu),
+	*         false w przeciwnym razie (ruch cofnięty)
+	*/
+	public boolean tryMovePiece(Piece piece, int targetCol, int targetRow) 
+	{
+		int oldCol = piece.getColumn();
+		int oldRow = piece.getRow();
+  
+		Piece captured = getPiece(targetCol, targetRow);
+
+		// jesli jest figura zbij
+		if (captured != null) 
+		{
+			removePiece(targetCol, targetRow);
+		}
+		
+		// aktualizacja pozycjib
+		piece.setColumn(targetCol);
+		piece.setRow(targetRow);
+
+		boolean stillInCheck = isKingInCheck(piece.getColor());
+		
+		// jesli to krol
+		// if(piece.getType() == Type.KING && isUnderAttack(targetCol, targetRow, piece.getColor(), piece.getType()))
+			// stillInCheck = true;
+
+		if (stillInCheck) 
+		{
+			// przywróć figurę na starą pozycję
+			piece.setColumn(oldCol);
+			piece.setRow(oldRow);
+
+			// jesli zbito figure a dalej szach to ja przywroc
+			if (captured != null) 
+			{
+				pieces.add(captured);
+				getChildren().add(captured.getImageView());
+			}
+			return false;
+		}
+		return true;
+	}
+
+public boolean isCheckmate(PieceColor color) 
+{
+    if (!isKingInCheck(color)) 
+	{
+        return false; 
+    }
+
+    return true; // mat
+}
+
+
+
 	public Piece getPiece(int col, int row)
 	{
 		for(Piece p : pieces)

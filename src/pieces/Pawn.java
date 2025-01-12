@@ -23,12 +23,22 @@ public class Pawn extends Piece
 				// isBlackPieceColor, isWhitePieceColor - brak wchodzenia na pionki
 				if (pieceColor == PieceColor.WHITE && targetRow < preRow && (isBlackPieceColor(targetCol, targetRow)))
 				{
-					handlePromotion();
-					System.out.println("Move allowed.");
-					return true;
+					if(!board.tryMovePiece(this, targetCol, targetRow))
+					{
+						System.out.println("King is under attack!");
+						return false;
+					}
+						handlePromotion();
+						System.out.println("Move allowed.");
+						return true;
 				}
 				else if (pieceColor == PieceColor.BLACK && targetRow > preRow && (isWhitePieceColor(targetCol, targetRow)))
 				{
+					if(!board.tryMovePiece(this, targetCol, targetRow))
+					{
+						System.out.println("King is under attack!");
+						return false;
+					}
 					handlePromotion();
 					System.out.println("Move allowed.");
 					return true;
@@ -43,6 +53,12 @@ public class Pawn extends Piece
 			{
 				if(pieceColor == PieceColor.WHITE && row == 6 && targetRow < preRow && (isBlackPieceColor(targetCol, targetRow)))
 				{
+					if(!board.tryMovePiece(this, targetCol, targetRow))
+					{
+						System.out.println("King is under attack!");
+						return false;
+					}
+	
 					setEnPassant(true);
 
 					return true;
@@ -50,6 +66,12 @@ public class Pawn extends Piece
 				
 				else if(pieceColor == PieceColor.BLACK && row == 1 && targetRow > preRow && (isWhitePieceColor(targetCol, targetRow)))
 				{
+					if(!board.tryMovePiece(this, targetCol, targetRow))
+					{
+						System.out.println("King is under attack!");
+						return false;
+					}
+	
 					setEnPassant(true);
 	
 					return true;
@@ -61,7 +83,6 @@ public class Pawn extends Piece
 					&& (isTheSamePieceColor(targetCol, targetRow)))
 			{
 				board.removePiece(targetCol, targetRow);
-
 				return true;
 			}
 			// En passant
