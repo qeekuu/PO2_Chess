@@ -37,6 +37,7 @@ public class King extends Piece
 					System.out.println("Check");
 					return false;
 				}
+
 					System.out.println("Move allowed.");
 					board.removePiece(targetCol, targetRow);
 					moved(preCol, preRow, targetCol, targetRow);

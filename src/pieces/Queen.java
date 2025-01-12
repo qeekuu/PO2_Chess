@@ -19,7 +19,7 @@ public class Queen extends Piece
 			{
 				
 				if(((targetCol == preCol || targetRow == preRow) || (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow))) 
-						&& (isTheSamePieceColor(targetCol, targetRow)) && (isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow)) 
+						&& (isTheSamePieceColor(targetCol, targetRow)) && isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow)
 						&& (isOnDiagonalLine(targetCol, targetRow, preCol, preRow)))
 				{
 					if(!board.tryMovePiece(this, targetCol, targetRow))

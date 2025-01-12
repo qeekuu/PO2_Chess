@@ -38,6 +38,7 @@ public class Board extends Pane
 	private Rectangle currentTileLight = null;
 	private List<Piece> pieces = new ArrayList<>(); // zapamietanie pozycji
 	private Piece piece;
+	private boolean gameOver = false;
 	
 	public Board()
 	{
@@ -131,6 +132,8 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 
 	// ruch - umiescic w klasie mouse albo podobnej
 	pieceView.setOnMousePressed(event -> {
+		if(gameOver)
+			return;
 		selectedPiece = piece;
 		selectedPieceView = pieceView;
 		selectedPiecePreCol = piece.getColumn();
@@ -139,6 +142,8 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 	});
 
 	pieceView.setOnMouseDragged(event -> {
+		if(gameOver)
+			return;
 		if(selectedPiece != null)
 		{
 			if(selectedPiece != null)
@@ -151,6 +156,8 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 	});
 
 pieceView.setOnMouseReleased(event -> {
+	if(gameOver)
+		return;
     if (selectedPiece != null) {
         // Finalizacja ruchu z zaokrągleniem do najbliższego kafelka
         int newCol = (int) (event.getSceneX() / tileSize);
@@ -174,11 +181,6 @@ pieceView.setOnMouseReleased(event -> {
 
         if (validMove) 
 		{
-
-			// if (isCheckmate(opponentColor)) 
-			// {
-				// System.out.println("Szach i mat! Wygrywa " + selectedPiece.getColor());
-			// }
 			if(selectedPiece.getType() == Type.KING && ((King) selectedPiece).hasJustCastled())
 			{
 				System.out.println("Castlinh");
@@ -196,6 +198,14 @@ pieceView.setOnMouseReleased(event -> {
 				{
 					((Pawn) selectedPiece).handlePromotion();
                 }
+				//mat
+				PieceColor currentColor = selectedPiece.getColor();
+				PieceColor opponetColor = (currentColor == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
+				if(isCheckmate(opponetColor))
+				{
+					System.out.println("Checkmate: " + currentColor + " wins!");
+					gameOver = true;
+				}
 			}
 		}	
 		else 
@@ -298,10 +308,6 @@ pieceView.setOnMouseReleased(event -> {
 		piece.setRow(targetRow);
 
 		boolean stillInCheck = isKingInCheck(piece.getColor());
-		
-		// jesli to krol
-		// if(piece.getType() == Type.KING && isUnderAttack(targetCol, targetRow, piece.getColor(), piece.getType()))
-			// stillInCheck = true;
 
 		if (stillInCheck) 
 		{
@@ -326,7 +332,40 @@ public boolean isCheckmate(PieceColor color)
 	{
         return false; 
     }
+	
+	for(Piece piece : pieces)
+	{
+		if(piece.getColor() == color)
+		{
+			int orginalCol = piece.getColumn();
+			int originalRow = piece.getRow();
 
+			// Sprawdzenie wszystkich możliwości
+			for(int targetCol = 0; targetCol < 8; targetCol++)
+				for(int targetRow = 0; targetRow < 8; targetRow++)
+					if(piece.canMove(orginalCol, originalRow, targetCol, targetRow))
+					{
+						Piece capturedPiece = getPiece(targetCol, targetRow);
+
+						// próba ruchu
+						piece.setColumn(targetCol);
+						piece.setRow(targetRow);
+						if(capturedPiece != null)
+							removePiece(targetCol, targetRow);
+
+						boolean kingStillInCheck = isKingInCheck(color);
+
+						// cofniecie ruchu, powrót do starej pozycji
+						piece.setColumn(orginalCol);
+						piece.setRow(originalRow);
+						if(capturedPiece != null)
+							pieces.add(capturedPiece);
+
+						if(!kingStillInCheck)
+							return false;
+					}
+		}
+	}
     return true; // mat
 }
 
