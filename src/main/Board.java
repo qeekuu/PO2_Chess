@@ -20,6 +20,7 @@ import javafx.geometry.Rectangle2D;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 import pieces.Type;
 import pieces.PieceColor;
@@ -30,6 +31,8 @@ import pieces.Bishop;
 import pieces.Rook;
 import pieces.Queen;
 import pieces.King;
+
+import network.*;
 
 public class Board extends Pane
 {
@@ -44,9 +47,13 @@ public class Board extends Pane
 	private List<Piece> pieces = new ArrayList<>(); // zapamietanie pozycji
 	private Piece piece;
 	private boolean gameOver = false;
+
+	// referencja do klienta
+	private final ChessClient chessClient;
 	
-	public Board()
+	public Board(ChessClient client)
 	{
+		this.chessClient = client;
 		drawBoard();	
 		setupPieces();
 	}
@@ -197,6 +204,9 @@ pieceView.setOnMouseReleased(event -> {
 				pieceView.setX(newCol * tileSize);
 				pieceView.setY(newRow * tileSize);
 				System.out.println("Moved " + selectedPiece.getType().toString().toLowerCase() + " to: Column: " + newCol + ", Row: " + newRow);
+
+				// wysłanie komunikatu do serwera
+				sendMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow);
 				
 				// Aktualizacja po promocji
                 if (selectedPiece.getType() == Type.PAWN && selectedPiece.canPromote()) 
@@ -228,6 +238,45 @@ pieceView.setOnMouseReleased(event -> {
 	pieces.add(piece);
     getChildren().add(pieceView);
 }
+
+	/**
+	 * Metody sieciowe:
+	 */
+	
+	/**
+	 * Metoda wywoływana, gdy lokalny gracz wykona ruch i che poinformowac o nim serwer.
+	 *
+	 */
+	public void sendMove(int startCol, int startRow, int endCol, int endRow){
+		if(chessClient != null)
+			chessClient.sendMove(startCol, startRow, endCol, endRow);
+	}
+
+	/**
+	 * Metoda wywoływana, gdy przeciwnik (połączony przez sieć) wykonał ruch a serwer wysłał o tym ingormacje.
+	 * Należy odwzorować ruch na lokalnej szchownicy.
+	 *
+	 */
+	
+	public void applyMove(int startCol, int startRow, int endCol, int endRow){
+		Piece movedPiece = getPiece(startCol, startRow);
+		if(movedPiece != null){
+			// jesli na polu targetowanym znajduje sie figura to nastepuje bicie
+			Piece capturedPiece = getPiece(endCol, endRow);
+			if(capturedPiece != null)
+				removePiece(endCol, endRow);
+
+			// aktualizacja pozycji
+			movedPiece.setColumn(endCol);
+			movedPiece.setRow(endRow);
+
+			// przesuniecie obrazu
+			ImageView imv = movedPiece.getImageView();
+			imv.setX(endCol * tileSize);
+			imv.setY(endRow * tileSize);
+		}
+	}
+
 	public boolean isSquareQccupied(int col, int row) 
 	{
 		for (int i = 0; i < pieces.size(); i++) 
@@ -337,7 +386,7 @@ pieceView.setOnMouseReleased(event -> {
 		// jesli nie wystepuje szach to nie moze wystapic mat
 		if (!isKingInCheck(color)) 
 			return false; 
-	
+		
 		for(Piece piece : pieces)
 		{
 			if(piece.getColor() == color)
@@ -388,7 +437,10 @@ pieceView.setOnMouseReleased(event -> {
 				VBox gameOptions = new VBox(10);
 				gameOptions.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8); -fx-padding: 20;");
 				gameOptions.setAlignment(Pos.CENTER);
-			
+		
+				Text gameOverText = new Text("Game Over.");
+				gameOverText.setFill(Color.WHITE);
+
 				Button playAgainButton = new Button("Play again");
 				Button quitButton = new Button("Quit");
 
@@ -407,7 +459,7 @@ pieceView.setOnMouseReleased(event -> {
 					System.exit(0);
 				});
 
-				gameOptions.getChildren().addAll(playAgainButton, quitButton);
+				gameOptions.getChildren().addAll(gameOverText, playAgainButton, quitButton);
 			
 				// dodanie do sceny
 				StackPane root = (StackPane) getScene().getRoot();

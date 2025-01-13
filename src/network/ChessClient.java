@@ -1,40 +1,126 @@
 package network; 
 
 import java.net.*;
+import java.util.Scanner;
+
+import javafx.application.Platform;
+
 import java.io.*;
 
-class ChessClient
+import main.Board;
+/**
+ * Klient do łączenia się z ChessServer.
+ *
+ */
+
+public class ChessClient
 {
-	public static void main(String[] args) throws IOException
+	private Socket socket;
+    private BufferedReader in;
+    private PrintWriter out;
+    private String host;
+    private int port;
+    private int playerId;
+
+	private final Board board;
+
+	public ChessClient(String host, int port, Board board){
+		this.host = host;
+		this.port = port;
+		this.board = board;
+	}
+
+	public void startClients()
 	{
-		try(Socket socket = new Socket("localhost", 3000))
-		{
-			System.out.println("Connected to server.");
+		try{
+			socket = new Socket(host, port);
+			System.out.println("ChessClient connested to server: " + host + ":" + port);
 
-			InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
-			BufferedReader in = new BufferedReader(inputStreamReader);
-			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			out = new PrintWriter(socket.getOutputStream(), true);
 
-			BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
-			String userLine;
+			// osbiór w osobnym watku wszystkich komunikatóœ z serwera
+			Thread listenThread = new Thread(() -> {
+				String serverMessage;
+				try{
+					while((serverMessage = in.readLine()) != null){
+						handleServerMessage(serverMessage);
+					}
+				}catch(IOException e){
+					e.printStackTrace();
+				}
+			});
+			listenThread.setDaemon(true);
+			listenThread.start();
 
-			System.out.println("Type message");
-			while((userLine = userInput.readLine()) != null)
-			{
-				out.println(userLine);
-				out.flush();
-				if("quit".equalsIgnoreCase(userLine))
-					break;
+			// czytanie ruchóœ z konsoli (powinno zostać przenieśione do board)
+			// Scanner scanner = new Scanner(System.in);
+			// while(true){
+				// String line = scanner.nextLine();
+				// out.println(line);
+				// out.flush();
 
-				String response = in.readLine();
-				System.out.println(response);
-			}
+				// if("QUIT".equalsIgnoreCase(line))
+					// break;
+			// }
+			// scanner.close();
+			// closeConnection();
 
-			System.out.println("Disconnected form server.");
-		}
-		catch(IOException e)
-		{
+		}catch(IOException e){
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Tymaczsowa metoda obsługi komunikatów z serwera.
+	 * Docelowo powinna być metoda typu board.handleInComingMove(startCol, startRow, endCol, endRow) z board
+	 */
+	private void handleServerMessage(String message){
+		if(message.startsWith("Welcome Player")){
+			// serwer nadaje id
+			String[] parts = message.split(" ");
+			playerId = Integer.parseInt(parts[1]);
+			System.out.println("ChessClient assign player id: " + playerId);
+		} else if(message.startsWith("MOVE")){
+			System.out.println("ChessClient received opponent move -> " + message);	
+			// w tym miejscu powinien się znajdować faktycnzy ruch na board np(parseMoveAndApply(message))
+			String[] parts = message.split(" ");
+			if(parts.length == 5){
+				int sc = Integer.parseInt(parts[1]);
+				int sr = Integer.parseInt(parts[2]);
+				int ec = Integer.parseInt(parts[3]);
+				int er = Integer.parseInt(parts[4]);
+
+				// metoda applyMove zmienia GUI, potrzba ją wywołać w wątku javaFx
+				Platform.runLater(() -> board.applyMove(sc, sr, ec, er));
+			}
+		} else {
+			System.out.println("ChessClient: " + message);
+		}
+	}
+
+	// klient przesyła ruch do serwera
+	public void sendMove(int startCol, int startRow, int endCol, int endRow){
+		if(out != null){
+			out.println("MOVE " + startCol + " " + startRow + " " + endCol + " " + endRow);
+		}
+	}
+
+	private void closeConnection(){
+		try{
+			if(in != null)
+				in.close();
+			if(out != null)
+				out.println("QUIT");
+			if(socket != null)
+				socket.close();
+			System.out.println("ChessClient: disconnected form the server.");
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+
+	public int getPlayerId(){
+		return playerId;
 	}
 }

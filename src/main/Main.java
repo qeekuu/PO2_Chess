@@ -21,25 +21,36 @@ import javafx.scene.input.KeyEvent;
 import pieces.Type;
 import pieces.PieceColor;
 
+import network.*;
+
 public class Main extends Application
 {
 	@Override
 	public void start(Stage primaryStage) throws Exception
 	{
-		primaryStage.setTitle("ChessGame");
+		// primaryStage.setTitle("ChessGame");
+		
+		// klient nie zna jeszce chessboard
+		ChessClient client = new ChessClient("localhost", 3000, null);
 
-
-		StackPane layout = new StackPane();
+		// StackPane layout = new StackPane();
 
 		//SZACHOWNICA BOARD.java
-		Board chessboard = new Board();
+		Board chessboard = new Board(client);
 
+		// teraz następuje ustawienie w kliencie referencji do board
+		client = new ChessClient("localhost", 3000, chessboard);
+		chessboard = new Board(client);
+		client.startClients();
 		
+		StackPane layout = new StackPane();
 
 		chessboard.setPrefSize(640, 640);
 		layout.getChildren().add(chessboard);
 
 		Scene scene = new Scene(layout, 900, 640, Color.BLACK);
+		
+		primaryStage.setTitle("ChessGame");
 
 		//Image icon = new Image("/resources/chess.png");
 		//primaryStage.getIcons().add(icon);
