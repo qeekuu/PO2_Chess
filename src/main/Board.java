@@ -20,6 +20,7 @@ import javafx.geometry.Rectangle2D;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 import pieces.Type;
 import pieces.PieceColor;
@@ -337,7 +338,7 @@ pieceView.setOnMouseReleased(event -> {
 		// jesli nie wystepuje szach to nie moze wystapic mat
 		if (!isKingInCheck(color)) 
 			return false; 
-	
+		
 		for(Piece piece : pieces)
 		{
 			if(piece.getColor() == color)
