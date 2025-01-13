@@ -2,14 +2,18 @@ package network;
 
 import java.net.*;
 import java.util.Scanner;
+
+import javafx.application.Platform;
+
 import java.io.*;
 
+import main.Board;
 /**
  * Klient do łączenia się z ChessServer.
  *
  */
 
-class ChessClient
+public class ChessClient
 {
 	private Socket socket;
     private BufferedReader in;
@@ -17,10 +21,13 @@ class ChessClient
     private String host;
     private int port;
     private int playerId;
-	
-	public ChessClient(String host, int port){
+
+	private final Board board;
+
+	public ChessClient(String host, int port, Board board){
 		this.host = host;
 		this.port = port;
+		this.board = board;
 	}
 
 	public void startClients()
@@ -43,20 +50,22 @@ class ChessClient
 					e.printStackTrace();
 				}
 			});
+			listenThread.setDaemon(true);
 			listenThread.start();
 
 			// czytanie ruchóœ z konsoli (powinno zostać przenieśione do board)
-			Scanner scanner = new Scanner(System.in);
-			while(true){
-				String line = scanner.nextLine();
-				out.println(line);
-				out.flush();
+			// Scanner scanner = new Scanner(System.in);
+			// while(true){
+				// String line = scanner.nextLine();
+				// out.println(line);
+				// out.flush();
 
-				if("QUIT".equalsIgnoreCase(line))
-					break;
-			}
-			scanner.close();
-			closeConnection();
+				// if("QUIT".equalsIgnoreCase(line))
+					// break;
+			// }
+			// scanner.close();
+			// closeConnection();
+
 		}catch(IOException e){
 			e.printStackTrace();
 		}
@@ -69,13 +78,31 @@ class ChessClient
 	private void handleServerMessage(String message){
 		if(message.startsWith("Welcome Player")){
 			// serwer nadaje id
-			this.playerId = Integer.parseInt(message.split(" ")[1]);
+			String[] parts = message.split(" ");
+			playerId = Integer.parseInt(parts[1]);
 			System.out.println("ChessClient assign player id: " + playerId);
 		} else if(message.startsWith("MOVE")){
 			System.out.println("ChessClient received opponent move -> " + message);	
 			// w tym miejscu powinien się znajdować faktycnzy ruch na board np(parseMoveAndApply(message))
+			String[] parts = message.split(" ");
+			if(parts.length == 5){
+				int sc = Integer.parseInt(parts[1]);
+				int sr = Integer.parseInt(parts[2]);
+				int ec = Integer.parseInt(parts[3]);
+				int er = Integer.parseInt(parts[4]);
+
+				// metoda applyMove zmienia GUI, potrzba ją wywołać w wątku javaFx
+				Platform.runLater(() -> board.applyMove(sc, sr, ec, er));
+			}
 		} else {
 			System.out.println("ChessClient: " + message);
+		}
+	}
+
+	// klient przesyła ruch do serwera
+	public void sendMove(int startCol, int startRow, int endCol, int endRow){
+		if(out != null){
+			out.println("MOVE " + startCol + " " + startRow + " " + endCol + " " + endRow);
 		}
 	}
 
@@ -84,7 +111,7 @@ class ChessClient
 			if(in != null)
 				in.close();
 			if(out != null)
-				out.close();
+				out.println("QUIT");
 			if(socket != null)
 				socket.close();
 			System.out.println("ChessClient: disconnected form the server.");
@@ -93,9 +120,7 @@ class ChessClient
 		}
 	}
 
-	public static void main(String[] args){
-		// test - uruchomienie lokalnie
-		ChessClient client = new ChessClient("localhost", 3000);
-		client.startClients();
+	public int getPlayerId(){
+		return playerId;
 	}
 }

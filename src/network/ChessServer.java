@@ -11,12 +11,11 @@ import java.util.List;
  *
  */
 
-class ChessServer
+public class ChessServer
 { 
 	// lista przechowująca obiekty dla obu graczy
 	private static List<PlayerHandler> players = new ArrayList<>(2);
-
-	private static int connectedPlayers = 0;
+	private static final int MAX_PLAYERS = 2;
 
 	public static void main(String[] args) throws IOException
 	{
@@ -25,13 +24,13 @@ class ChessServer
 			System.out.println("Server running using port 3000.");
 			System.out.println("Waiting for two players...");
 
-			while(connectedPlayers < 2){
+			while(players.size() < MAX_PLAYERS){
 			
 				Socket clientSocket = serverSocket.accept();
-				connectedPlayers++;
-				System.out.println("Client connected: " + connectedPlayers + "from address: " + clientSocket.getInetAddress());
+				int playerId = players.size() + 1;
+				System.out.println("Client connected: " + playerId + "from address: " + clientSocket.getInetAddress());
 	
-				PlayerHandler handler = new PlayerHandler(clientSocket, connectedPlayers);
+				PlayerHandler handler = new PlayerHandler(clientSocket, playerId);
 				players.add(handler);
 
 				// start wątku obsługującego danego graza
@@ -118,6 +117,7 @@ class ChessServer
 				}catch(IOException e){
 					e.printStackTrace();
 				}
+				System.out.println("Player # " + playerId + "disconnected.");
 			}
 		}
 

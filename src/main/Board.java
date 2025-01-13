@@ -32,6 +32,8 @@ import pieces.Rook;
 import pieces.Queen;
 import pieces.King;
 
+import network.*;
+
 public class Board extends Pane
 {
 	private int columns = 8;
@@ -45,9 +47,13 @@ public class Board extends Pane
 	private List<Piece> pieces = new ArrayList<>(); // zapamietanie pozycji
 	private Piece piece;
 	private boolean gameOver = false;
+
+	// referencja do klienta
+	private final ChessClient chessClient;
 	
-	public Board()
+	public Board(ChessClient client)
 	{
+		this.chessClient = client;
 		drawBoard();	
 		setupPieces();
 	}
@@ -198,6 +204,9 @@ pieceView.setOnMouseReleased(event -> {
 				pieceView.setX(newCol * tileSize);
 				pieceView.setY(newRow * tileSize);
 				System.out.println("Moved " + selectedPiece.getType().toString().toLowerCase() + " to: Column: " + newCol + ", Row: " + newRow);
+
+				// wysłanie komunikatu do serwera
+				sendMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow);
 				
 				// Aktualizacja po promocji
                 if (selectedPiece.getType() == Type.PAWN && selectedPiece.canPromote()) 
@@ -229,6 +238,45 @@ pieceView.setOnMouseReleased(event -> {
 	pieces.add(piece);
     getChildren().add(pieceView);
 }
+
+	/**
+	 * Metody sieciowe:
+	 */
+	
+	/**
+	 * Metoda wywoływana, gdy lokalny gracz wykona ruch i che poinformowac o nim serwer.
+	 *
+	 */
+	public void sendMove(int startCol, int startRow, int endCol, int endRow){
+		if(chessClient != null)
+			chessClient.sendMove(startCol, startRow, endCol, endRow);
+	}
+
+	/**
+	 * Metoda wywoływana, gdy przeciwnik (połączony przez sieć) wykonał ruch a serwer wysłał o tym ingormacje.
+	 * Należy odwzorować ruch na lokalnej szchownicy.
+	 *
+	 */
+	
+	public void applyMove(int startCol, int startRow, int endCol, int endRow){
+		Piece movedPiece = getPiece(startCol, startRow);
+		if(movedPiece != null){
+			// jesli na polu targetowanym znajduje sie figura to nastepuje bicie
+			Piece capturedPiece = getPiece(endCol, endRow);
+			if(capturedPiece != null)
+				removePiece(endCol, endRow);
+
+			// aktualizacja pozycji
+			movedPiece.setColumn(endCol);
+			movedPiece.setRow(endRow);
+
+			// przesuniecie obrazu
+			ImageView imv = movedPiece.getImageView();
+			imv.setX(endCol * tileSize);
+			imv.setY(endRow * tileSize);
+		}
+	}
+
 	public boolean isSquareQccupied(int col, int row) 
 	{
 		for (int i = 0; i < pieces.size(); i++) 
