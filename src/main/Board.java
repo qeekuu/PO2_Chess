@@ -417,24 +417,24 @@ pieceView.setOnMouseReleased(event -> {
 					for(int targetRow = 0; targetRow < 8; targetRow++)
 						if(piece.canMove(orginalCol, originalRow, targetCol, targetRow))
 						{
-							Piece capturedPiece = getPiece(targetCol, targetRow);
+							// Piece capturedPiece = getPiece(targetCol, targetRow);
 
 							// próba ruchu
 							piece.setColumn(targetCol);
 							piece.setRow(targetRow);
-							if(capturedPiece != null)
-								removePiece(targetCol, targetRow);
+							// if(capturedPiece != null)
+								// removePiece(targetCol, targetRow);
 
 							boolean kingStillInCheck = isKingInCheck(color);
 
 							// cofniecie ruchu, powrót do starej pozycji
 							piece.setColumn(orginalCol);
 							piece.setRow(originalRow);
-							if(capturedPiece != null)
-							{
-								pieces.add(capturedPiece);
-								getChildren().add(capturedPiece.getImageView());
-							}
+							// if(capturedPiece != null)
+							// {
+								// pieces.add(capturedPiece);
+								// getChildren().add(capturedPiece.getImageView());
+							// }
 
 							if(!kingStillInCheck)
 								return false;
