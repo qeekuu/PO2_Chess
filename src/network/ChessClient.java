@@ -79,7 +79,7 @@ public class ChessClient
 		if(message.startsWith("Welcome Player")){
 			// serwer nadaje id
 			String[] parts = message.split(" ");
-			playerId = Integer.parseInt(parts[1]);
+			playerId = Integer.parseInt(parts[2]); // część "trzecia" wiadomości z id
 			System.out.println("ChessClient assign player id: " + playerId);
 		} else if(message.startsWith("MOVE")){
 			System.out.println("ChessClient received opponent move -> " + message);	
@@ -92,6 +92,7 @@ public class ChessClient
 				int er = Integer.parseInt(parts[4]);
 
 				// metoda applyMove zmienia GUI, potrzba ją wywołać w wątku javaFx
+				// startcol, startrow, endcol, endrow
 				Platform.runLater(() -> board.applyMove(sc, sr, ec, er));
 			}
 		} else {
