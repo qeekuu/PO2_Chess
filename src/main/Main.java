@@ -30,17 +30,26 @@ public class Main extends Application
 	{
 		// primaryStage.setTitle("ChessGame");
 		
-		// klient nie zna jeszce chessboard
-		ChessClient client = new ChessClient("localhost", 3000, null);
-
 		// StackPane layout = new StackPane();
 
-		//SZACHOWNICA BOARD.java
-		Board chessboard = new Board(client);
+		// PODEJSCEI 2
+		// Najpierw tworzenie instancji chessboard (każdy klient uruchamia mina.Main osobon) 
+		// uniknięcie problemu z przekazywaniem w ChessClient "null" w zmienie GUI wątku JavaFx
+		Board chessboard = new Board(null);
+		
+		// stworznie klienta przekuzujac mu szachownice
+		ChessClient client = new ChessClient("localhost", 3000, chessboard);
 
+		// setter do zapamietania klienta
+		chessboard.setChessClient(client);
+
+		// PODEJSCIE 1
 		// teraz następuje ustawienie w kliencie referencji do board
-		client = new ChessClient("localhost", 3000, chessboard);
-		chessboard = new Board(client);
+		// ChessClient	client = new ChessClient("localhost", 3000, null);
+		
+		// stworzenie instancji szachownicy z odniesieniem do klienta
+		// Board chessboard = new Board(client);
+		
 		client.startClients();
 		
 		StackPane layout = new StackPane();

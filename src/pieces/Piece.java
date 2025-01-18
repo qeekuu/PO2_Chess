@@ -22,8 +22,8 @@ import main.Main;
 import main.Board;
 
 /**
- *	Absract class for pieces
- *
+ *	Klasa abstrakcyjna reprezentująca figury szachowe.
+ *  
  *
  * */
 

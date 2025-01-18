@@ -36,7 +36,7 @@ public class ChessServer
 				// start wątku obsługującego danego graza
 				handler.start();
 
-				System.out.println("Both players are connected.");
+				System.out.println("Player #" + playerId + " connected.");
 
 				// InputStreamReader inputStreamReader = new InputStreamReader(clientSocket.getInputStream());
 				// BufferedReader in = new BufferedReader(inputStreamReader);
@@ -93,14 +93,9 @@ public class ChessServer
 					System.out.println("Player # " + playerId + ":" + inputLine);
 
 					// przeslanie ruchu klienta przez serwer do drugiego gracza
-					if(inputLine.startsWith("MOVE ")){
+					if(inputLine.startsWith("MOVE")){
 						// rozesłanie do pozostałych graczy
 						broadcastToOthers(playerId, inputLine);
-					}
-
-					if("QUIT".equalsIgnoreCase(inputLine)){
-						System.out.println(" The player # " + playerId + "ended the connection.");
-						break;
 					}
 				}
 			}catch(IOException e){
@@ -117,7 +112,7 @@ public class ChessServer
 				}catch(IOException e){
 					e.printStackTrace();
 				}
-				System.out.println("Player # " + playerId + "disconnected.");
+				System.out.println("Player # " + playerId + " disconnected.");
 			}
 		}
 
