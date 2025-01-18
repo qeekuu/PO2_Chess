@@ -32,11 +32,24 @@ public class Main extends Application
 		
 		// StackPane layout = new StackPane();
 
-		// teraz następuje ustawienie w kliencie referencji do board
-		ChessClient	client = new ChessClient("localhost", 3000, null);
+		// PODEJSCEI 2
+		// Najpierw tworzenie instancji chessboard (każdy klient uruchamia mina.Main osobon) 
+		// uniknięcie problemu z przekazywaniem w ChessClient "null" w zmienie GUI wątku JavaFx
+		Board chessboard = new Board(null);
+		
+		// stworznie klienta przekuzujac mu szachownice
+		ChessClient client = new ChessClient("localhost", 3000, chessboard);
 
+		// setter do zapamietania klienta
+		chessboard.setChessClient(client);
+
+		// PODEJSCIE 1
+		// teraz następuje ustawienie w kliencie referencji do board
+		// ChessClient	client = new ChessClient("localhost", 3000, null);
+		
 		// stworzenie instancji szachownicy z odniesieniem do klienta
-		Board chessboard = new Board(client);
+		// Board chessboard = new Board(client);
+		
 		client.startClients();
 		
 		StackPane layout = new StackPane();

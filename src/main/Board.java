@@ -49,7 +49,7 @@ public class Board extends Pane
 	private boolean gameOver = false;
 
 	// referencja do klienta
-	private final ChessClient chessClient;
+	private ChessClient chessClient;
 	
 	public Board(ChessClient client)
 	{
@@ -285,6 +285,14 @@ pieceView.setOnMouseReleased(event -> {
 			imv.setX(endCol * tileSize);
 			imv.setY(endRow * tileSize);
 		}
+	}
+
+	/**
+	 * Setter dla chessCkient
+	 *
+	 */
+	public void setChessClient(ChessClient c){
+		this.chessClient = c;
 	}
 
 	public boolean isSquareQccupied(int col, int row) 
