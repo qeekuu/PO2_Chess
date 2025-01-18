@@ -47,6 +47,7 @@ public class Board extends Pane
 	private List<Piece> pieces = new ArrayList<>(); // zapamietanie pozycji
 	private Piece piece;
 	private boolean gameOver = false;
+	private PieceColor currentTurn = PieceColor.WHITE;
 
 	// referencja do klienta
 	private ChessClient chessClient;
@@ -135,7 +136,6 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
             break;
     }
 
-
     ImageView pieceView = piece.getImageView();
 
     // Pozycjonowanie
@@ -144,7 +144,7 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 
 	// ruch - umiescic w klasie mouse albo podobnej
 	pieceView.setOnMousePressed(event -> {
-		if(gameOver)
+		if(gameOver || !isCurrentTurn(piece.getColor()))
 			return;
 		selectedPiece = piece;
 		selectedPieceView = pieceView;
@@ -196,6 +196,7 @@ pieceView.setOnMouseReleased(event -> {
 			if(selectedPiece.getType() == Type.KING && ((King) selectedPiece).hasJustCastled())
 			{
 				System.out.println("Castlinh");
+				switchTurn();
 			}
 			else
 			{
@@ -215,6 +216,7 @@ pieceView.setOnMouseReleased(event -> {
                 if (selectedPiece.getType() == Type.PAWN && selectedPiece.canPromote()) 
 				{
 					((Pawn) selectedPiece).handlePromotion();
+					switchTurn();
                 }
 				//mat
 				PieceColor currentColor = selectedPiece.getColor();
@@ -225,6 +227,8 @@ pieceView.setOnMouseReleased(event -> {
 					gameOver = true;
 					gameOverWindow();
 				}
+				else
+					switchTurn();
 			}
 		}	
 		else 
@@ -241,6 +245,17 @@ pieceView.setOnMouseReleased(event -> {
 	pieces.add(piece);
     getChildren().add(pieceView);
 }
+
+	private void switchTurn(){
+		currentTurn = (currentTurn == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
+		System.out.println("Now it's " + currentTurn + "'s turn.");
+	}
+
+	private boolean isCurrentTurn(PieceColor pieceColor){
+		return pieceColor == currentTurn;
+	}
+
+
 
 	/**
 	 * Metody sieciowe:
@@ -284,6 +299,8 @@ pieceView.setOnMouseReleased(event -> {
 			ImageView imv = movedPiece.getImageView();
 			imv.setX(endCol * tileSize);
 			imv.setY(endRow * tileSize);
+
+			switchTurn();
 		}
 	}
 
