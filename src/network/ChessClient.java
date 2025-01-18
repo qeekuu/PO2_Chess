@@ -53,17 +53,6 @@ public class ChessClient
 			listenThread.setDaemon(true);
 			listenThread.start();
 
-			// czytanie ruchóœ z konsoli (powinno zostać przenieśione do board)
-			// Scanner scanner = new Scanner(System.in);
-			// while(true){
-				// String line = scanner.nextLine();
-				// out.println(line);
-				// out.flush();
-
-				// if("QUIT".equalsIgnoreCase(line))
-					// break;
-			// }
-			// scanner.close();
 			// closeConnection();
 
 		}catch(IOException e){
@@ -82,8 +71,8 @@ public class ChessClient
 			playerId = Integer.parseInt(parts[2]); // część "trzecia" wiadomości z id
 			System.out.println("ChessClient assign player id: " + playerId);
 		} else if(message.startsWith("MOVE")){
+			// np MOVE 1 2 3 4 (sc sr ec er)
 			System.out.println("ChessClient received opponent move -> " + message);	
-			// w tym miejscu powinien się znajdować faktycnzy ruch na board np(parseMoveAndApply(message))
 			String[] parts = message.split(" ");
 			if(parts.length == 5){
 				int sc = Integer.parseInt(parts[1]);
@@ -96,14 +85,23 @@ public class ChessClient
 				Platform.runLater(() -> board.applyMove(sc, sr, ec, er));
 			}
 		} else {
+			// jesli nie wysylamy ruchu a chcemy przeslac np GAME OVER
 			System.out.println("ChessClient: " + message);
 		}
 	}
 
 	// klient przesyła ruch do serwera
 	public void sendMove(int startCol, int startRow, int endCol, int endRow){
-		if(out != null){
-			out.println("MOVE " + startCol + " " + startRow + " " + endCol + " " + endRow);
+		// if(out != null){
+			// out.println("MOVE " + startCol + " " + startRow + " " + endCol + " " + endRow);
+		// }
+		System.out.println("DEBUG: ChessClient.sendMove(...) - about to write to server:");
+		System.out.println("       MOVE " + startCol + " " + startRow + " " + endCol + " " + endRow);
+
+	    if (out != null) {
+		    out.println("MOVE " + startCol + " " + startRow + " " + endCol + " " + endRow);
+		} else {
+			System.out.println("DEBUG: out is null, can't send anything!");
 		}
 	}
 
@@ -112,7 +110,7 @@ public class ChessClient
 			if(in != null)
 				in.close();
 			if(out != null)
-				out.println("QUIT");
+				out.close();
 			if(socket != null)
 				socket.close();
 			System.out.println("ChessClient: disconnected form the server.");

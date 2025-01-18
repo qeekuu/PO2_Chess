@@ -30,17 +30,13 @@ public class Main extends Application
 	{
 		// primaryStage.setTitle("ChessGame");
 		
-		// klient nie zna jeszce chessboard
-		ChessClient client = new ChessClient("localhost", 3000, null);
-
 		// StackPane layout = new StackPane();
 
-		//SZACHOWNICA BOARD.java
-		Board chessboard = new Board(client);
-
 		// teraz następuje ustawienie w kliencie referencji do board
-		client = new ChessClient("localhost", 3000, chessboard);
-		chessboard = new Board(client);
+		ChessClient	client = new ChessClient("localhost", 3000, null);
+
+		// stworzenie instancji szachownicy z odniesieniem do klienta
+		Board chessboard = new Board(client);
 		client.startClients();
 		
 		StackPane layout = new StackPane();

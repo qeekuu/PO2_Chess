@@ -205,6 +205,9 @@ pieceView.setOnMouseReleased(event -> {
 				pieceView.setY(newRow * tileSize);
 				System.out.println("Moved " + selectedPiece.getType().toString().toLowerCase() + " to: Column: " + newCol + ", Row: " + newRow);
 
+				System.out.println("DEBUG: About to call sendMove with coords: " + selectedPiecePreCol + ","
+						+ selectedPiecePreRow + " -> " + newCol + "," + newRow);
+
 				// wysłanie komunikatu do serwera
 				sendMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow);
 				
@@ -248,8 +251,15 @@ pieceView.setOnMouseReleased(event -> {
 	 *
 	 */
 	public void sendMove(int startCol, int startRow, int endCol, int endRow){
-		if(chessClient != null)
-			chessClient.sendMove(startCol, startRow, endCol, endRow);
+		System.out.println("DEBUG: Board.sendMove(...) was called.");
+		System.out.println("       chessClient = " + chessClient);
+		System.out.println("       coords: " + startCol + "," + startRow + " -> " + endCol + "," + endRow);
+
+		if(chessClient != null) {
+		   chessClient.sendMove(startCol, startRow, endCol, endRow);
+		} else {
+			System.out.println("DEBUG: chessClient is null, can't send!");
+		}
 	}
 
 	/**
