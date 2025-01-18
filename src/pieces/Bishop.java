@@ -25,7 +25,7 @@ public class Bishop extends Piece
 						System.out.println("King is under attack!");
 						return false;
 					}
-					System.out.println("Move allowed.");	
+					System.out.println("Move allowed.");
 					return isOnDiagonalLine(targetCol, targetRow, preCol, preRow);
 				}
 				else

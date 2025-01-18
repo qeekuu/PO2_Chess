@@ -40,7 +40,7 @@ public class Main extends Application
 		// stworznie klienta przekuzujac mu szachownice
 		ChessClient client = new ChessClient("localhost", 3000, chessboard);
 
-		// setter do zapamietania klienta
+		// setter do zapamietania klienta (players)
 		chessboard.setChessClient(client);
 
 		// PODEJSCIE 1

@@ -27,6 +27,7 @@ public class Rook extends Piece
 					}
 					System.out.println("Move allowed.");
 					moved(preCol, preRow, targetCol, targetRow); // roszada
+					board.removePiece(targetCol, targetRow);
 					// return isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow);
 					return true;
 				}
