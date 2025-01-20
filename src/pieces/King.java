@@ -1,11 +1,14 @@
 package pieces;
 
 import main.Board;
+import database.*;
 
 public class King extends Piece
 {
 	private boolean justCastled = false;
 	private boolean isCheck = false;
+	private MoveDataBaseSaveReading moveDB = new MoveDataBaseSaveReading();
+	private int currentGameId = 1;
 
 	public King(PieceColor pieceColor, int col, int row, Board board)
 	{
@@ -81,6 +84,9 @@ public class King extends Piece
 					
 					this.moved(preCol, preRow, 6, targetRow);
 					rook.moved(7, preRow, 5, targetRow);
+
+					// Zapis ruchu do bazy
+					moveDB.saveMove(new Move(currentGameId,rook.getType().toString(),rook.getColor().toString(),rook.preCol,rook.preRow,rookTargetCol,targetRow));
 
 					justCastled = true;
 					System.out.println("Kingside castling allowed.");

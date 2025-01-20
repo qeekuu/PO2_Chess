@@ -33,6 +33,7 @@ import pieces.Queen;
 import pieces.King;
 
 import network.*;
+import database.*;
 
 public class Board extends Pane
 {
@@ -48,6 +49,8 @@ public class Board extends Pane
 	private Piece piece;
 	private boolean gameOver = false;
 	private PieceColor currentTurn = PieceColor.WHITE;
+	private MoveDataBaseSaveReading moveDB = new MoveDataBaseSaveReading(); 
+	private int currentGameId = 1;
 
 	// referencja do klienta
 	private ChessClient chessClient;
@@ -212,6 +215,17 @@ pieceView.setOnMouseReleased(event -> {
 				// wysłanie komunikatu do serwera
 				sendMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow);
 				
+				// Zapis ruchu do bazy
+				moveDB.saveMove(new Move(
+                        currentGameId,
+                        selectedPiece.getType().toString(),
+                        selectedPiece.getColor().toString(),
+                        selectedPiecePreCol,
+                        selectedPiecePreRow,
+                        newCol,
+                        newRow
+				));
+
 				// Aktualizacja po promocji
                 if (selectedPiece.getType() == Type.PAWN && selectedPiece.canPromote()) 
 				{
