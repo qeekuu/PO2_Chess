@@ -51,6 +51,7 @@ public class Board extends Pane
 	private PieceColor currentTurn = PieceColor.WHITE;
 	private MoveDataBaseSaveReading moveDB = new MoveDataBaseSaveReading(); 
 	private int currentGameId = 1;
+	private PieceColor localColor;
 
 	// referencja do klienta
 	private ChessClient chessClient;
@@ -145,120 +146,133 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
     pieceView.setX(col * tileSize);
     pieceView.setY(row * tileSize);
 
-	// ruch - umiescic w klasie mouse albo podobnej
+	// Obsługa kliknięcia (wybór figury)
 	pieceView.setOnMousePressed(event -> {
-		if(gameOver || !isCurrentTurn(piece.getColor()))
+		if (gameOver || !isCurrentTurn(piece.getColor()) || piece.getColor() != localColor) {
 			return;
+		}
 		selectedPiece = piece;
 		selectedPieceView = pieceView;
 		selectedPiecePreCol = piece.getColumn();
 		selectedPiecePreRow = piece.getRow();
-		System.out.println("Selected piece :" + selectedPiece);
+		System.out.println("Selected piece: " + selectedPiece);
 	});
 
+	// Obsługa przeciągania (ruch figury)
 	pieceView.setOnMouseDragged(event -> {
-		if(gameOver)
+		if (gameOver || selectedPiece == null) {
 			return;
-		if(selectedPiece != null)
-		{
-			if(selectedPiece != null)
-			{
-				pieceView.setX(event.getSceneX() - tileSize / 2);
-				pieceView.setY(event.getSceneY() - tileSize / 2);
-			}
 		}
 
+		// Przeliczenie pozycji myszy na współrzędne ekranu z uwzględnieniem odwróconej szachownicy
+		// double mouseX = event.getSceneX();
+		// double mouseY = event.getSceneY();
+
+		// Pobranie współrzędnych myszy względem szachownicy
+		// double mouseX = event.getX();
+		// double mouseY = event.getY();
+
+		double mouseX = event.getSceneX() - getLayoutX();
+		double mouseY = event.getSceneY() - getLayoutY();
+
+		if (localColor == PieceColor.BLACK) {
+			double boardSize = 8 * tileSize;
+			mouseX = boardSize - (event.getSceneX() - getLayoutX());
+			mouseY = boardSize - (event.getSceneY() - getLayoutY());
+		}
+
+		pieceView.setX(mouseX - tileSize / 2);
+		pieceView.setY(mouseY - tileSize / 2);
 	});
 
-pieceView.setOnMouseReleased(event -> {
-	if(gameOver)
-		return;
-    if (selectedPiece != null) {
-        // Finalizacja ruchu z zaokrągleniem do najbliższego kafelka
-        int newCol = (int) (event.getSceneX() / tileSize);
-        int newRow = (int) (event.getSceneY() / tileSize);
+	// Obsługa zwolnienia myszy (upuszczenie figury)
+	pieceView.setOnMouseReleased(event -> {
+		if (gameOver) {
+			return;
+		}
+		if (selectedPiece != null) {
+			// int newCol = getCorrectedColumn(event.getX());
+			// int newRow = getCorrectedRow(event.getY());
 
-        boolean validMove = false;
+			double mouseX = event.getSceneX() - getLayoutX();
+			double mouseY = event.getSceneY() - getLayoutY();
 
-        switch (selectedPiece.getType()) {
-            case KING:
-            case KNIGHT:
-            case ROOK:
-            case BISHOP:
-			case QUEEN:
-			case PAWN:
-                validMove = selectedPiece.canMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow);
-                break;
-            default:
-                validMove = true;
-                break;
-        }
+			int newCol = getCorrectedColumn(mouseX);
+			int newRow = getCorrectedRow(mouseY);
 
-        if (validMove) 
-		{
-			if(selectedPiece.getType() == Type.KING && ((King) selectedPiece).hasJustCastled())
-			{
-				System.out.println("Castlinh");
-				switchTurn();
-			}
-			else
-			{
+			boolean validMove = selectedPiece.canMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow);
+
+			if (validMove) {
 				selectedPiece.setColumn(newCol);
 				selectedPiece.setRow(newRow);
 				pieceView.setX(newCol * tileSize);
 				pieceView.setY(newRow * tileSize);
-				System.out.println("Moved " + selectedPiece.getType().toString().toLowerCase() + " to: Column: " + newCol + ", Row: " + newRow);
 
-				System.out.println("DEBUG: About to call sendMove with coords: " + selectedPiecePreCol + ","
-						+ selectedPiecePreRow + " -> " + newCol + "," + newRow);
+				System.out.println("Moved " + selectedPiece.getType().toString().toLowerCase()
+					               + " to: Column: " + newCol + ", Row: " + newRow);
 
-				// wysłanie komunikatu do serwera
+				// Wysłanie ruchu do serwera
 				sendMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow);
-				
-				// Zapis ruchu do bazy
+
+				// Zapis do bazy danych
 				moveDB.saveMove(new Move(
-                        currentGameId,
-                        selectedPiece.getType().toString(),
-                        selectedPiece.getColor().toString(),
-                        selectedPiecePreCol,
-                        selectedPiecePreRow,
-                        newCol,
-                        newRow
+					    currentGameId,
+						selectedPiece.getType().toString(),
+						selectedPiece.getColor().toString(),
+						selectedPiecePreCol,
+						selectedPiecePreRow,
+						newCol,
+						newRow
 				));
 
-				// Aktualizacja po promocji
-                if (selectedPiece.getType() == Type.PAWN && selectedPiece.canPromote()) 
-				{
+				// Obsługa promocji pionka
+				if (selectedPiece.getType() == Type.PAWN && selectedPiece.canPromote()) {
 					((Pawn) selectedPiece).handlePromotion();
 					switchTurn();
-                }
-				//mat
+				}
+
+				// Sprawdzenie, czy jest mat
 				PieceColor currentColor = selectedPiece.getColor();
-				PieceColor opponetColor = (currentColor == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
-				if(isCheckmate(opponetColor))
-				{
+				PieceColor opponentColor = (currentColor == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
+				if (isCheckmate(opponentColor)) {
 					System.out.println("Checkmate: " + currentColor + " wins!");
 					gameOver = true;
 					gameOverWindow();
-				}
-				else
+				} else {
 					switchTurn();
+				}
+			} else {
+				// Niepoprawny ruch - powrót do poprzedniej pozycji
+				pieceView.setX(selectedPiecePreCol * tileSize);
+				pieceView.setY(selectedPiecePreRow * tileSize);
+				System.out.println("Invalid move!");
 			}
-		}	
-		else 
-		{
-            pieceView.setX(selectedPiece.getColumn() * tileSize);
-            pieceView.setY(selectedPiece.getRow() * tileSize);
-            System.out.println("Invalid move!");
-        }
 
-        selectedPiece = null;
-    }
-});
+			selectedPiece = null;
+		}
+	});
 
 	pieces.add(piece);
-    getChildren().add(pieceView);
+	getChildren().add(pieceView);
 }
+	// Funkcja do poprawnego przeliczania kolumny względem koloru gracza
+	private int getCorrectedColumn(double mouseX) {
+		if (localColor == PieceColor.BLACK) {
+			return 7 - (int)(mouseX / tileSize);
+		} else {
+			return (int)(mouseX / tileSize);
+		}
+	}
+
+	// Funkcja do poprawnego przeliczania wiersza względem koloru gracza
+	private int getCorrectedRow(double mouseY) {
+		if (localColor == PieceColor.BLACK) {
+			return 7 - (int)(mouseY / tileSize);
+		} else {
+			return (int)(mouseY / tileSize);
+		}
+	}
+
 
 	private void switchTurn(){
 		currentTurn = (currentTurn == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
@@ -339,7 +353,24 @@ pieceView.setOnMouseReleased(event -> {
 		}
 		return false;
 	}
-	
+
+	/**
+	 *
+	 *
+	 */
+
+	public void flipBoard(){
+		this.setRotate(180);
+
+		for(Piece p : pieces){
+			p.getImageView().setRotate(180);
+		}
+	}
+
+	public void setLocalColor(PieceColor color){
+		this.localColor = color;
+	}
+
 	/**
 	* @param defendingColor (unikanie sprawdzania ataku dla tego samego koloru bierek)
 	*/
