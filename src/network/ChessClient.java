@@ -12,6 +12,7 @@ import main.Board;
  * Klient do łączenia się z ChessServer.
  *
  */
+import pieces.PieceColor;
 
 public class ChessClient
 {
@@ -21,6 +22,7 @@ public class ChessClient
     private String host;
     private int port;
     private int playerId;
+	private PieceColor localColor;
 
 	private final Board board;
 
@@ -70,6 +72,22 @@ public class ChessClient
 			String[] parts = message.split(" ");
 			playerId = Integer.parseInt(parts[2]); // część "trzecia" wiadomości z id
 			System.out.println("ChessClient assign player id: " + playerId);
+		} else if(message.startsWith("COLOR")){
+			// white or black
+			String[] parts = message.split(" ");
+			String colorStr = parts[1];
+			if(colorStr.equalsIgnoreCase("WHITE")) {
+				localColor = PieceColor.WHITE;
+			} else {
+				localColor = PieceColor.BLACK;
+			}
+
+			board.setLocalColor(localColor);
+
+			// if black player flip the board
+			if(localColor == PieceColor.BLACK)
+				board.flipBoard();
+
 		} else if(message.startsWith("MOVE")){
 			// np MOVE 1 2 3 4 (sc sr ec er)
 			System.out.println("ChessClient received opponent move -> " + message);	

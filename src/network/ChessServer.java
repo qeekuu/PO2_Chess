@@ -88,6 +88,11 @@ public class ChessServer
 
 				out.println("Welcome Player " + playerId);
 
+				if(playerId == 1)
+					out.println("COLOR WHITE");
+				else if(playerId == 2)
+					out.println("COLOR BLACK");
+
 				String inputLine;
 				while((inputLine = in.readLine()) != null){
 					System.out.println("Player # " + playerId + ":" + inputLine);

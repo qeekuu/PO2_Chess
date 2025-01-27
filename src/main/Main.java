@@ -57,7 +57,7 @@ public class Main extends Application
 		chessboard.setPrefSize(640, 640);
 		layout.getChildren().add(chessboard);
 
-		Scene scene = new Scene(layout, 900, 640, Color.BLACK);
+		Scene scene = new Scene(layout, 640, 640, Color.BLACK);
 		
 		primaryStage.setTitle("ChessGame");
 

@@ -27,6 +27,7 @@ public class Bishop extends Piece
 					}
 					System.out.println("Move allowed.");
 					return isOnDiagonalLine(targetCol, targetRow, preCol, preRow);
+					// return true;
 				}
 				else
 				{
