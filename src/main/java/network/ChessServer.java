@@ -138,6 +138,7 @@ public class ChessServer
 
 		/**
 		 * Wysyła wiadomość do konkretnego gracza.
+		 * @param message wiadomość.
 		 */
 		public void sendMessage(String message){
 			out.println(message);
@@ -145,6 +146,8 @@ public class ChessServer
 
 		/**
 		 * Przesyła komunikat do pozostałych graczy (innych niż senderIN).
+		 * @param senderID id wysyłającego.
+		 * @param message wiadomość.
 		 */
 		private static void broadcastToOthers(int senderID, String message){
 			for(PlayerHandler ph : players)
