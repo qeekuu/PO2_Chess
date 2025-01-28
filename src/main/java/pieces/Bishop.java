@@ -20,14 +20,18 @@ public class Bishop extends Piece
 				
 				if((Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow)) && (isTheSamePieceColor(targetCol, targetRow)))
 				{
-					if(!board.tryMovePiece(this, targetCol, targetRow))
-					{
+					if(!isOnDiagonalLine(targetCol, targetRow, preCol, preRow)){
+						System.out.println("Move invalid: The diagonal is blocked!");
+						return false;
+					}
+
+					if(!board.tryMovePiece(this, targetCol, targetRow)){
 						System.out.println("King is under attack!");
 						return false;
 					}
+
 					System.out.println("Move allowed.");
-					return isOnDiagonalLine(targetCol, targetRow, preCol, preRow);
-					// return true;
+					return true;
 				}
 				else
 				{

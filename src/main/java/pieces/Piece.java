@@ -280,7 +280,7 @@ public abstract class Piece
 	}
 
     private void loadSprite() {
-        String filePath = "/resources/pieces160x480.png";
+        String filePath = "/pieces160x480.png";
         this.spriteSheet = new Image(getClass().getResourceAsStream(filePath));
         imageView = new ImageView(spriteSheet);
     }
