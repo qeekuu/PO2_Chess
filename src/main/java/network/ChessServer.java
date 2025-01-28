@@ -31,7 +31,12 @@ public class ChessServer
 				System.out.println("Client connected: " + playerId + "from address: " + clientSocket.getInetAddress());
 	
 				PlayerHandler handler = new PlayerHandler(clientSocket, playerId);
-				players.add(handler);
+				//players.add(handler);
+
+				// synchronizacja jesli wystapilo by rownoleglosc
+				synchronized(players){
+					players.add(handler);
+				}
 
 				// start wątku obsługującego danego graza
 				handler.start();
@@ -117,7 +122,17 @@ public class ChessServer
 				}catch(IOException e){
 					e.printStackTrace();
 				}
-				System.out.println("Player # " + playerId + " disconnected.");
+				//System.out.println("Player # " + playerId + " disconnected.");
+				// usuniecie gracza z listy jesli zakonczyl poloczenie
+				synchronized(players){
+					players.remove(this);
+					System.out.println("Player # " + playerId + " disconnected.");
+
+					if(players.isEmpty()){
+						System.out.println("Shutting down the server...");
+						System.exit(0);
+					}
+				}
 			}
 		}
 
