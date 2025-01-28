@@ -44,7 +44,6 @@ public class Board extends Pane
 	private int selectedPiecePreCol;
 	private int selectedPiecePreRow;
 	private ImageView selectedPieceView;
-	private Rectangle currentTileLight = null;
 	private List<Piece> pieces = new ArrayList<>(); // zapamietanie pozycji
 	private Piece piece;
 	private boolean gameOver = false;
@@ -63,6 +62,9 @@ public class Board extends Pane
 		setupPieces();
 	}
 
+	/**
+	 * Metoda odpowiadająca z "narysowanie" planszy.
+	 */
 	private void drawBoard()
 	{
 		for(int row = 0; row < rows; row++)
@@ -81,9 +83,12 @@ public class Board extends Pane
 		}
 		setPrefSize(columns * tileSize, rows * tileSize);
 	}
-	
-private void setupPieces()
-{
+
+	/**
+	 * Metoda odpowiadająca za rozmieszczenie figur na szachownicy.
+	 * Wykorzystuje metodę "addPiece".
+	 */
+	private void setupPieces(){
 		//Black pieces
         addPiece(0, 0, Type.ROOK, PieceColor.BLACK);
 		addPiece(1, 0, Type.KNIGHT, PieceColor.BLACK);
@@ -110,152 +115,162 @@ private void setupPieces()
 
 		for(int i = 0; i < 8; i++)
 			addPiece(i, 6, Type.PAWN, PieceColor.WHITE);
-}
+	}
+	
+	/**
+	 * Metoda odpowiadająca za dodanie instancji figury.
+	 * @param col kolumna.
+	 * @param row wiersz.
+	 * @param type typ figury.
+	 * @param pieceColor kolor figury.
+	 * Metoda ta posiada również lambdy zajmujące się logiką ruchu myszy.
+	 */
+	public void addPiece(int col, int row, Type type, PieceColor pieceColor){
+		
+		Piece piece;
 
-public void addPiece(int col, int row, Type type, PieceColor pieceColor) 
-{
-    Piece piece;
-
-    // Tworzymy odpowiedni typ figury w zależności od podanego typu
-    switch (type) 
-	{
-        case PAWN:
-            piece = new Pawn(pieceColor, col, row, this);
-            break;
-        case KNIGHT:
-            piece = new Knight(pieceColor, col, row, this);
-            break;
-        case BISHOP:
-            piece = new Bishop(pieceColor, col, row, this);
-            break;
-        case ROOK:
-            piece = new Rook(pieceColor, col, row, this);
-            break;
-        case QUEEN:
-            piece = new Queen(pieceColor, col, row, this);
-            break;
-        case KING:
-        default:
-            piece = new King(pieceColor, col, row, this);
-            break;
-    }
-
-    ImageView pieceView = piece.getImageView();
-
-    // Pozycjonowanie
-    pieceView.setX(col * tileSize);
-    pieceView.setY(row * tileSize);
-
-	// Obsługa kliknięcia (wybór figury)
-	pieceView.setOnMousePressed(event -> {
-		if (gameOver || !isCurrentTurn(piece.getColor()) || piece.getColor() != localColor) {
-			return;
-		}
-		selectedPiece = piece;
-		selectedPieceView = pieceView;
-		selectedPiecePreCol = piece.getColumn();
-		selectedPiecePreRow = piece.getRow();
-		System.out.println("Selected piece: " + selectedPiece);
-	});
-
-	// Obsługa przeciągania (ruch figury)
-	pieceView.setOnMouseDragged(event -> {
-		if (gameOver || selectedPiece == null) {
-			return;
+		// Tworzymy odpowiedni typ figury w zależności od podanego typu
+		switch (type) {
+			case PAWN:
+				piece = new Pawn(pieceColor, col, row, this);
+				break;
+			case KNIGHT:
+				piece = new Knight(pieceColor, col, row, this);
+				break;
+			case BISHOP:
+				piece = new Bishop(pieceColor, col, row, this);
+				break;
+			case ROOK:
+				piece = new Rook(pieceColor, col, row, this);
+				break;
+			case QUEEN:
+				piece = new Queen(pieceColor, col, row, this);
+				break;
+			case KING:
+			default:
+				piece = new King(pieceColor, col, row, this);
+				break;
 		}
 
-		// Przeliczenie pozycji myszy na współrzędne ekranu z uwzględnieniem odwróconej szachownicy
-		// double mouseX = event.getSceneX();
-		// double mouseY = event.getSceneY();
+		ImageView pieceView = piece.getImageView();
 
-		// Pobranie współrzędnych myszy względem szachownicy
-		// double mouseX = event.getX();
-		// double mouseY = event.getY();
+		// Pozycjonowanie
+		pieceView.setX(col * tileSize);
+		pieceView.setY(row * tileSize);
 
-		double mouseX = event.getSceneX() - getLayoutX();
-		double mouseY = event.getSceneY() - getLayoutY();
+		// Obsługa kliknięcia (wybór figury)
+		pieceView.setOnMousePressed(event -> {
+			if (gameOver || !isCurrentTurn(piece.getColor()) || piece.getColor() != localColor) {
+				return;
+			}
+			selectedPiece = piece;
+			selectedPieceView = pieceView;
+			selectedPiecePreCol = piece.getColumn();
+			selectedPiecePreRow = piece.getRow();
+			System.out.println("Selected piece: " + selectedPiece);
+		});
 
-		if (localColor == PieceColor.BLACK) {
-			double boardSize = 8 * tileSize;
-			mouseX = boardSize - (event.getSceneX() - getLayoutX());
-			mouseY = boardSize - (event.getSceneY() - getLayoutY());
-		}
+		// Obsługa przeciągania (ruch figury)
+		pieceView.setOnMouseDragged(event -> {
+			if (gameOver || selectedPiece == null) {
+				return;
+			}
 
-		pieceView.setX(mouseX - tileSize / 2);
-		pieceView.setY(mouseY - tileSize / 2);
-	});
+			// Przeliczenie pozycji myszy na współrzędne ekranu z uwzględnieniem odwróconej szachownicy
+			// double mouseX = event.getSceneX();
+			// double mouseY = event.getSceneY();
 
-	// Obsługa zwolnienia myszy (upuszczenie figury)
-	pieceView.setOnMouseReleased(event -> {
-		if (gameOver) {
-			return;
-		}
-		if (selectedPiece != null) {
-			// int newCol = getCorrectedColumn(event.getX());
-			// int newRow = getCorrectedRow(event.getY());
+			// Pobranie współrzędnych myszy względem szachownicy
+			// double mouseX = event.getX();
+			// double mouseY = event.getY();
 
 			double mouseX = event.getSceneX() - getLayoutX();
 			double mouseY = event.getSceneY() - getLayoutY();
 
-			int newCol = getCorrectedColumn(mouseX);
-			int newRow = getCorrectedRow(mouseY);
-
-			boolean validMove = selectedPiece.canMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow);
-
-			if (validMove) {
-				selectedPiece.setColumn(newCol);
-				selectedPiece.setRow(newRow);
-				pieceView.setX(newCol * tileSize);
-				pieceView.setY(newRow * tileSize);
-
-				System.out.println("Moved " + selectedPiece.getType().toString().toLowerCase()
-					               + " to: Column: " + newCol + ", Row: " + newRow);
-
-				// Wysłanie ruchu do serwera
-				sendMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow);
-
-				// Zapis do bazy danych
-				moveDB.saveMove(new Move(
-					    currentGameId,
-						selectedPiece.getType().toString(),
-						selectedPiece.getColor().toString(),
-						selectedPiecePreCol,
-						selectedPiecePreRow,
-						newCol,
-						newRow
-				));
-
-				// Obsługa promocji pionka
-				if (selectedPiece.getType() == Type.PAWN && selectedPiece.canPromote()) {
-					((Pawn) selectedPiece).handlePromotion();
-					switchTurn();
-				}
-
-				// Sprawdzenie, czy jest mat
-				PieceColor currentColor = selectedPiece.getColor();
-				PieceColor opponentColor = (currentColor == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
-				if (isCheckmate(opponentColor)) {
-					System.out.println("Checkmate: " + currentColor + " wins!");
-					gameOver = true;
-					gameOverWindow();
-				} else {
-					switchTurn();
-				}
-			} else {
-				// Niepoprawny ruch - powrót do poprzedniej pozycji
-				pieceView.setX(selectedPiecePreCol * tileSize);
-				pieceView.setY(selectedPiecePreRow * tileSize);
-				System.out.println("Invalid move!");
+			if (localColor == PieceColor.BLACK) {
+				double boardSize = 8 * tileSize;
+				mouseX = boardSize - (event.getSceneX() - getLayoutX());
+				mouseY = boardSize - (event.getSceneY() - getLayoutY());
 			}
 
-			selectedPiece = null;
-		}
-	});
+			pieceView.setX(mouseX - tileSize / 2);
+			pieceView.setY(mouseY - tileSize / 2);
+		});
 
-	pieces.add(piece);
-	getChildren().add(pieceView);
-}
+		// Obsługa zwolnienia myszy (upuszczenie figury)
+		pieceView.setOnMouseReleased(event -> {
+			if (gameOver) {
+				return;
+			}
+			if (selectedPiece != null) {
+				// int newCol = getCorrectedColumn(event.getX());
+				// int newRow = getCorrectedRow(event.getY());
+
+				double mouseX = event.getSceneX() - getLayoutX();
+				double mouseY = event.getSceneY() - getLayoutY();
+
+				int newCol = getCorrectedColumn(mouseX);
+				int newRow = getCorrectedRow(mouseY);
+
+				boolean validMove = selectedPiece.canMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow);
+
+				if (validMove) {
+					selectedPiece.setColumn(newCol);
+					selectedPiece.setRow(newRow);
+					pieceView.setX(newCol * tileSize);
+					pieceView.setY(newRow * tileSize);
+
+					System.out.println("Moved " + selectedPiece.getType().toString().toLowerCase()
+									+ " to: Column: " + newCol + ", Row: " + newRow);
+
+					// Wysłanie ruchu do serwera
+					sendMove(selectedPiecePreCol, selectedPiecePreRow, newCol, newRow);
+
+					// Zapis do bazy danych
+					moveDB.saveMove(new Move(
+							currentGameId,
+							selectedPiece.getType().toString(),
+							selectedPiece.getColor().toString(),
+							selectedPiecePreCol,
+							selectedPiecePreRow,
+							newCol,
+							newRow
+					));
+
+					// Obsługa promocji pionka
+					if (selectedPiece.getType() == Type.PAWN && selectedPiece.canPromote()) {
+						((Pawn) selectedPiece).handlePromotion();
+						switchTurn();
+					}
+
+					// Sprawdzenie, czy jest mat
+					PieceColor currentColor = selectedPiece.getColor();
+					PieceColor opponentColor = (currentColor == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
+					if (isCheckmate(opponentColor)) {
+						System.out.println("Checkmate: " + currentColor + " wins!");
+						gameOver = true;
+						gameOverWindow();
+					} else {
+						switchTurn();
+					}
+				} else {
+					// Niepoprawny ruch - powrót do poprzedniej pozycji
+					pieceView.setX(selectedPiecePreCol * tileSize);
+					pieceView.setY(selectedPiecePreRow * tileSize);
+					System.out.println("Invalid move!");
+				}
+
+				selectedPiece = null;
+			}
+		});
+
+		pieces.add(piece);
+		getChildren().add(pieceView);
+	}
 	// Funkcja do poprawnego przeliczania kolumny względem koloru gracza
+	/**
+	 * Metoda odpowiadająca za przeliczenie kolumnu względem koloru gracza (związane z obróceniem szachownicy u drugiego klienta).
+	 */
 	private int getCorrectedColumn(double mouseX) {
 		if (localColor == PieceColor.BLACK) {
 			return 7 - (int)(mouseX / tileSize);
@@ -265,6 +280,9 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 	}
 
 	// Funkcja do poprawnego przeliczania wiersza względem koloru gracza
+	/**
+	 * Metoda odpowiadająca za przeliczenie wiersza względem koloru gracza (związane z obróceniem szachownicy u drugiego klienta).
+	 */
 	private int getCorrectedRow(double mouseY) {
 		if (localColor == PieceColor.BLACK) {
 			return 7 - (int)(mouseY / tileSize);
@@ -273,12 +291,16 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 		}
 	}
 
-
+	/**
+	 * Metoda odpowiadająca za zmianę tury.
+	 */
 	private void switchTurn(){
 		currentTurn = (currentTurn == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
 		System.out.println("Now it's " + currentTurn + "'s turn.");
 	}
-
+	/**
+	 * Metoda sprawdzająca turę.
+	 */
 	private boolean isCurrentTurn(PieceColor pieceColor){
 		return pieceColor == currentTurn;
 	}
@@ -291,7 +313,11 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 	
 	/**
 	 * Metoda wywoływana, gdy lokalny gracz wykona ruch i che poinformowac o nim serwer.
-	 *
+	 * @param startCol pole kolumny, z którego zaczyna ruch figura.
+	 * @param startRow pole wiersza, z którego zaczyna ruch figura.
+	 * @param endCol pole kolumny, na którym kończy ruch figura.
+	 * @param endRow pole wiersza, na którym kończy ruch figura.
+
 	 */
 	public void sendMove(int startCol, int startRow, int endCol, int endRow){
 		System.out.println("DEBUG: Board.sendMove(...) was called.");
@@ -308,7 +334,11 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 	/**
 	 * Metoda wywoływana, gdy przeciwnik (połączony przez sieć) wykonał ruch a serwer wysłał o tym ingormacje.
 	 * Należy odwzorować ruch na lokalnej szchownicy.
-	 *
+	 * @param startCol pole kolumny, z którego zaczyna ruch figura.
+	 * @param startRow pole wiersza, z którego zaczyna ruch figura.
+	 * @param endCol pole kolumny, na którym kończy ruch figura.
+	 * @param endRow pole wiersza, na którym kończy ruch figura.
+
 	 */
 	
 	public void applyMove(int startCol, int startRow, int endCol, int endRow){
@@ -340,6 +370,12 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 		this.chessClient = c;
 	}
 
+	/**
+	 * Metoda sprawdzająca czy na danym polu stoi jakaś fiigura.
+	 * @param col kolumna. 
+	 * @param row wiersz.
+	 * @return true jeśli pole jest zajęte, false jeśli puste.
+	 */
 	public boolean isSquareQccupied(int col, int row) 
 	{
 		for (int i = 0; i < pieces.size(); i++) 
@@ -355,10 +391,8 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 	}
 
 	/**
-	 *
-	 *
+	 * Metoda obracająca szachownicę dal drugiego klienta.
 	 */
-
 	public void flipBoard(){
 		this.setRotate(180);
 
@@ -366,13 +400,20 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 			p.getImageView().setRotate(180);
 		}
 	}
-
+	/**
+	 * Metoda ustawiająca kolor dla szachownicy.
+	 */
 	public void setLocalColor(PieceColor color){
 		this.localColor = color;
 	}
 
 	/**
-	* @param defendingColor (unikanie sprawdzania ataku dla tego samego koloru bierek)
+	* Metoda sprawdzająca czy pole jest pod atakiem.
+	* @param col kolumna.
+	* @param row wiersz.
+	* @param defendingColor (unikanie sprawdzania ataku dla tego samego koloru bierek).
+	* @param type typ bierki.
+	* @return true jeśli pole jest pod atakiem, false jeśli nie.
 	*/
 	public boolean isUnderAttack(int col, int row, PieceColor defendingColor, Type type)
 	{
@@ -390,7 +431,12 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 		}
 		return false;
 	}
-
+	
+	/**
+	 * Metoda sprawdzająca czy król jest w szachu.
+	 * @param color kolor figury.
+	 * @return metodę isUnderAttack, która sprawdza, czy pole jest atakowane.
+	 */
 	public boolean isKingInCheck(PieceColor color)
 	{
 		King king = null;
@@ -461,6 +507,11 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 		return true;
 	}
 
+	/**
+	 * Metoda sprawdzająca czy jest szach z matem.
+	 * @param color kolor figury.
+	 * @return false, jeśli nie ma, true jeśli jest mat.
+	 */
 	public boolean isCheckmate(PieceColor color) 
 	{
 		// jesli nie wystepuje szach to nie moze wystapic mat
@@ -506,6 +557,9 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 		return true; // mat
 	}
 
+	/**
+	 * Metoda wyświetlająca okno po zakończeniu gry z wyborem wyjścia, bądz rozpoczęcia gry na nowo. 
+	 */
 	public void gameOverWindow()
 	{
 		if(gameOver)
@@ -548,12 +602,18 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 	
 	}
 
+	/**
+	 * Metoda usuwająca scenę po wyborze.
+	 */
 	private void removeGameOverOptions(VBox gameOptions) 
 	{
 		StackPane root = (StackPane) getScene().getRoot();
 		root.getChildren().remove(gameOptions);
 	}
 	
+	/**
+	 * Metoda resetująca stan szachownicy do początkowego po wybraniu opcji "playAgain".
+	 */
 	private void resetBoard()
 	{
 		// usuniecie wszystkich bierek
@@ -568,6 +628,10 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 		selectedPiece = null;
 	}
 
+	/**
+	 * Getter do pobrania figury z szachownicy.
+	 * @return figura, jeśli nie pobrano null.
+	 */
 	public Piece getPiece(int col, int row)
 	{
 		for(Piece p : pieces)
@@ -578,11 +642,21 @@ public void addPiece(int col, int row, Type type, PieceColor pieceColor)
 		return null;
 	}
 
+	/**
+	 * Getter do pobrania rozmiaru kafelka.
+	 * @return tileSize.
+	 */
 	public double getTileSize()
 	{
 		return tileSize;
 	}
 
+	/**
+	 * Metoda usuwająca figurę z szachownicy podczas bicia.
+	 * @param col kolumna.
+	 * @param row wiersz.
+	 * @return true jeśli zbito, false jeśli nie.
+	 */
 	public void removePiece(int col, int row)
 	{
 		pieces.removeIf(piece -> {

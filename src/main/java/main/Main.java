@@ -23,8 +23,10 @@ import pieces.PieceColor;
 
 import network.*;
 
-public class Main extends Application
-{
+public class Main extends Application{
+	/**
+	 * Nadpisana metoda start() inicjalizująca scenę i cały front z wykorzystaniem JavaFx.
+	 */
 	@Override
 	public void start(Stage primaryStage) throws Exception
 	{
@@ -70,7 +72,10 @@ public class Main extends Application
 		// primaryStage.setResizable(false);	
 		layout.setStyle("-fx-background: black;"); // po promocji
 	}
-	
+
+	/**
+	 * Główna metoda statująca aplikację.
+	 */
 	public static void main(String[] args)
 	{
 		launch(args);

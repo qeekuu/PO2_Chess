@@ -23,9 +23,7 @@ import main.Board;
 
 /**
  *	Klasa abstrakcyjna reprezentująca figury szachowe.
- *  
- *
- * */
+ */
 
 
 public abstract class Piece 
@@ -56,7 +54,10 @@ public abstract class Piece
         loadSprite();
 		updateSprite();
 	}
-	
+
+	/**
+	 * Gettery, settery.
+	 */
 	public int getColumn()
 	{
 		return col;
@@ -114,10 +115,28 @@ public abstract class Piece
 	}
 	
 	// abstract method for moving pieces
+	/**
+	 * Abstrakcyjna metoda realizująca możliwość ruchu.
+	 * @param selectedPiecePreCol kolumna, na której znajdowała się figura.
+	 * @param selectedPiecePreRow wiersz, na którym znajdowała się figura.
+	 * @param targetCol kolumna docelowa.
+	 * @param targetRow wiersz docelowy.
+	 */
 	public abstract boolean canMove(int selectedPiecePreCol, int selectedPiecePreRow, int targetCol, int targetRow);
 
+	/**
+	 * Abstrakcyjna metoda realizująca możliwość ataku.
+	 * @param selectedPiecePreCol kolumna, na której znajdowała się figura.
+	 * @param selectedPiecePreRow wiersz, na którym znajdowała się figura.
+	 * @param targetCol kolumna docelowa.
+	 * @param targetRow wiersz docelowy.
+	 */
 	public abstract boolean canAttack(int selectedPiecePreCol, int selectedPiecePreRow, int targetCol, int targetRow);
-	
+
+	/**
+	 * Metoda sprawdzająca czy pionek znajduje się na polu, z którego moze dokonać promoci.
+	 * @return true jeśli tak, false jeślie nie.
+	 */
 	public boolean canPromote()
 	{
 		if(pieceType == Type.PAWN)
@@ -129,6 +148,9 @@ public abstract class Piece
 		return false;
 	}
 
+	/**
+	 * Metoda zajmująca się oknem promocji jeśli canPromote() zwraca turue.
+	 */
 	public void handlePromotion()
 	{
 		if(canPromote())
@@ -184,12 +206,19 @@ public abstract class Piece
 		}
 	}
 
+	/**
+	 * Metoda usuwająca opcje promocji po wyborze.
+	 */
 	private void removePromotionOptions(VBox promotionOptions) 
 	{
 		StackPane root = (StackPane) board.getScene().getRoot();
 		root.getChildren().remove(promotionOptions);
 	}
-
+	
+	/**
+	 * Metoda realizująca promocję.
+	 * @newType nowy typ figury (promocja).
+	 */
 	private void promoteTo(Type newType) 
 	{
 		board.removePiece(col, row);
@@ -197,6 +226,14 @@ public abstract class Piece
 		System.out.println("Pawn promoted to " + newType);
 	}
 
+	/**
+	 * Metoda sprawdzająca, czy figura się ruszyła.
+	 * @param preCol poprzednia kolumna, na której znajdowałą się figura.
+	 * @param preRow poprzedni wiersz, na którym znajdowałą się figura.
+	 * @param col jeśli nastąpił ruch to przyjmuje wartość nowej kolumny, jeśli nie pozostaje niezmienony.
+	 * @param row jeśli nastąpił ruch to przyjmuje wartość nowej kolumny, jeśli nie pozostaje niezmienony.
+	 * @return true, jeśli tak, false w przeciwnym.
+	 */
 	public boolean moved(int preCol, int preRow, int col, int row)
 	{
 		if(preCol != col || preRow != row)
@@ -212,6 +249,12 @@ public abstract class Piece
 		return hasMoved;
 	}
 
+	/**
+	 * Metoda sprawdzająca, czy ruch jest w obrębie szachownicy.
+	 * @param targetRow kolumna docelowa.
+	 * @param targetRow wirsz docelowy.
+	 * @return true, jeśli w obrębie, false jeśli nie.
+	 */
 	public boolean isWithinBoard(int targetCol, int targetRow)
 	{
 		if(targetCol >= 0 && targetCol <= 7 && targetRow >= 0 && targetRow <= 7)
@@ -220,7 +263,14 @@ public abstract class Piece
 		}
 		return false;
 	}
-	
+
+	/**
+	 * Metoda sprawdzjąca czy na pozycji nie znajduje się bierka o takim samym kolorze.
+	 * Wykorzystuje metodę z klasy board isSquareQccupied.
+	 * @param targetCol kolumna docelowa.
+	 * @param targetRow wirsz coelowy.
+	 * @return false, jeśli nie, true jeśli tak.
+	 */
 	public boolean isTheSamePieceColor(int targetCol, int targetRow)
 	{
 		if((board.isSquareQccupied(targetCol, targetRow)) && (board.getPiece(targetCol, targetRow).getColor().equals(this.pieceColor)))
@@ -242,6 +292,14 @@ public abstract class Piece
 		return true;
 	}
 
+	/**
+	 * Metoda sprawdzjąca, czy żadna figura nie stoi na przeszkodzie w pionie i w poziomie.
+	 * @param targetCol kolumna docelowa.
+	 * @param targetRow wiersz docelowy.
+	 * @param preCol poprzednia kolumna.
+	 * @param preRow poprzedni wiersz.
+	 * @return false, jeśli nie, true jeśli tak.
+	 */
 	public boolean isOnVertivalOrHorizontalLine(int targetCol, int targetRow, int preCol, int preRow)
 	{
 		// HORIZONTAL
@@ -266,6 +324,15 @@ public abstract class Piece
 		return true;
 	}
 
+	/**
+	 * Metoda sprawdzjąca, czy żadna figura nie stoi na przeszkodzie w lini diagonalnej.
+	 * @param targetCol kolumna docelowa.
+	 * @param targetRow wiersz docelowy.
+	 * @param preCol poprzednia kolumna.
+	 * @param preRow poprzedni wiersz.
+	 * @return false, jeśli nie, true jeśli tak.
+	 */
+	
 	public boolean isOnDiagonalLine(int targetCol, int targetRow, int preCol, int preRow) 
 	{
 		for(int i = 1; i < Math.abs(targetCol - preCol); i++)
@@ -279,12 +346,18 @@ public abstract class Piece
 		return true;
 	}
 
+	/**
+	 * Metoda wczytująca sprite figur.
+	 */
     private void loadSprite() {
-        String filePath = "/resources/pieces160x480.png";
+        String filePath = "/pieces160x480.png";
         this.spriteSheet = new Image(getClass().getResourceAsStream(filePath));
         imageView = new ImageView(spriteSheet);
     }
 
+	/**
+	 * Metoda dzieląca wczytany sprite na pojedyncze figury.
+	 */
 	public void updateSprite()
 	{
 		int spriteWidth = 80;

@@ -63,8 +63,8 @@ public class ChessClient
 	}
 
 	/**
-	 * Tymaczsowa metoda obsługi komunikatów z serwera.
-	 * Docelowo powinna być metoda typu board.handleInComingMove(startCol, startRow, endCol, endRow) z board
+	 * Metoda odpowiadająca za obsługę komunikatów.
+	 * @param message komunikat.
 	 */
 	private void handleServerMessage(String message){
 		if(message.startsWith("Welcome Player")){
@@ -109,6 +109,13 @@ public class ChessClient
 	}
 
 	// klient przesyła ruch do serwera
+	/**
+	 * Metoda odpowiadająca za przesłanie ruchu do serwera.
+	 * @param startCol pole kolumny, z którego zaczyna ruch figura.
+	 * @param startRow pole wiersza, z którego zaczyna ruch figura.
+	 * @param endCol pole kolumny, na którym kończy ruch figura.
+	 * @param endRow pole wiersza, na którym kończy ruch figura.
+	 */
 	public void sendMove(int startCol, int startRow, int endCol, int endRow){
 		// if(out != null){
 			// out.println("MOVE " + startCol + " " + startRow + " " + endCol + " " + endRow);
@@ -123,13 +130,16 @@ public class ChessClient
 		}
 	}
 
+	/**
+	 * Metoda odpowiadająca za zamknięcie połączenia.
+	 */
 	private void closeConnection(){
 		try{
 			if(in != null)
 				in.close();
 			if(out != null)
 				out.close();
-			if(socket != null)
+			if(socket != null && !socket.isClosed())
 				socket.close();
 			System.out.println("ChessClient: disconnected form the server.");
 		}catch(IOException e){
@@ -137,6 +147,9 @@ public class ChessClient
 		}
 	}
 
+	/**
+	 * Geter pobierający id gracza.
+	 */
 	public int getPlayerId(){
 		return playerId;
 	}
