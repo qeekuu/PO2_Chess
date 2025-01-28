@@ -18,8 +18,13 @@ public class Rook extends Piece
 			if(isWithinBoard(targetCol, targetRow))
 			{
 				
-				if((targetCol == preCol || targetRow == preRow) && (isTheSamePieceColor(targetCol, targetRow)) && (isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow)))
+				if((targetCol == preCol || targetRow == preRow) && (isTheSamePieceColor(targetCol, targetRow)))
 				{
+					if(!isOnVertivalOrHorizontalLine(targetCol, targetRow, preCol, preRow)){
+						System.out.println("Move invalid; The horizontal or vertical line is blocked!");
+						return false;
+					}
+						
 					if(!board.tryMovePiece(this, targetCol, targetRow))
 					{
 						System.out.println("King is under attack!");
