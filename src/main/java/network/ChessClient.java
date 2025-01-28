@@ -129,7 +129,7 @@ public class ChessClient
 				in.close();
 			if(out != null)
 				out.close();
-			if(socket != null)
+			if(socket != null && !socket.isClosed())
 				socket.close();
 			System.out.println("ChessClient: disconnected form the server.");
 		}catch(IOException e){
